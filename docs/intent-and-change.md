@@ -41,7 +41,7 @@ Systém slouží zaměstnancům k včasnému zajištění parkovacího místa p�
 
 ## Common business rule
 
-Confirmed reservations for the same resource must not overlap. (Dvě potvrzené rezervace pro stejné parkovací místo se nesmí časově překrývat).
+Dvě potvrzené rezervace pro stejné parkovací místo se nesmí časově překrývat.
 
 ## Domain-specific business rule
 
@@ -54,3 +54,11 @@ Zaměstnanec může mít v jeden kalendářní den aktivní (CONFIRMED) rezervac
 ## Assumption
 
 Předpokládáme, že zaměstnanci budou rezervace tvořit a rušit převážně přes mobilní telefon těsně před odjezdem do práce (případně při změně plánu z domova), systém proto musí být navržen tak, aby na mobilních klientech v budoucnu reagoval rychle.
+
+## Unknown
+Zatím nevíme, jak systémově vyřešíme situaci, kdy zaměstnanec na rezervované místo nepřijede (no-show), a zda místo po určité době automaticky uvolníme pro ostatní.
+
+## Selected future pressure
+Category: C (Changeability)
+Concrete pressure: Přidání nového typu zdroje (nabíjecí stanice pro elektromobily) s nutností validovat, zda má uživatel registrovaný elektromobil.
+Why it is relevant to our reservation system: Parkovací infrastruktura se mění směrem k elektromobilitě a firma pravděpodobně v blízké budoucnosti vyhradí část míst pouze pro nabíjení. Náš systém na tento nový typ resource musí být připraven.
