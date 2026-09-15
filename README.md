@@ -1,6 +1,8 @@
 # Rezervační systém pro parkovací místa
 Adam Kopec
-Bc. Martin Dresler
+
+Bc. Martin Dressler
+
 Pavel Michenka
 
 ## CP1 walking skeleton
