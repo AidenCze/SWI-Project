@@ -1,7 +1,7 @@
 # Rezervační systém pro parkovací místa
 Adam Kopec
 
-Bc. Martin Dressler
+Martin Dressler
 
 Pavel Michenka
 
