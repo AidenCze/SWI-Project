@@ -25,7 +25,8 @@ pip install -r requirements.txt
 3. **Spuštění serveru:**
 ```bash
 cd src
-python manage.py runserver
+python manage.py migrate    # inicializace databáze bez které by to nejelo (ta na githubu není, je v .gitignore)
+python manage.py runserver  # samotné spuštění serveru
 ```
 
 
