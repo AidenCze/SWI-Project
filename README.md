@@ -32,8 +32,14 @@ python manage.py runserver  # samotné spuštění serveru
 
 
 ## CP1 walking skeleton
-POST /reservations
-→ validate (uživatel nemá na dnešek jinou rezervaci a místo je volné)
-→ persist (uložení rezervace se stavem DRAFT/CONFIRMED)
-→ return reservation ID
-→ automated check (ověření vráceného HTTP statusu a dat v odpovědi)
+
+Nejjednodušší end-to-end průchod systémem pro úspěšné vytvoření rezervace parkovacího místa:
+
+1. **POST /reservations** 
+   (Uživatel odešle požadavek na rezervaci daného parkovacího místa na daný den).
+2. **→ validate** 
+   (Systém ověří dvě věci: 1. Místo je volné. 2. Uživatel na dnešek ještě žádné jiné místo nemá).
+3. **→ persist** 
+   (Systém uloží rezervaci do databáze se stavem CONFIRMED).
+4. **→ return reservation ID** 
+   (Systém odpoví uživateli a vrátí mu ID vytvořené rezervace).
