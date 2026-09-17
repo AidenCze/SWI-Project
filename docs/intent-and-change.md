@@ -61,4 +61,5 @@ Zatím nevíme, jak systémově vyřešíme situaci, kdy zaměstnanec na rezervo
 ## Selected future pressure
 Category: C (Changeability)
 Concrete pressure: Přidání nového typu zdroje (nabíjecí stanice pro elektromobily) s nutností validovat, zda má uživatel registrovaný elektromobil.
+
 Why it is relevant to our reservation system: Parkovací infrastruktura se mění směrem k elektromobilitě a firma pravděpodobně v blízké budoucnosti vyhradí část míst pouze pro nabíjení. Náš systém na tento nový typ resource musí být připraven.
