@@ -43,3 +43,5 @@ Nejjednodušší end-to-end průchod systémem pro úspěšné vytvoření rezer
    (Systém uloží rezervaci do databáze se stavem CONFIRMED).
 4. **→ return reservation ID** 
    (Systém odpoví uživateli a vrátí mu ID vytvořené rezervace).
+5. **→ automated check**
+   (Automatický test pošle zkušební požadavek a ověří, že API vrátilo správný HTTP status a rezervace se zapsala do databáze).
