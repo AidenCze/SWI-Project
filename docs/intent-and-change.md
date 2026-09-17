@@ -56,7 +56,7 @@ Zaměstnanec může mít v jeden kalendářní den aktivní (CONFIRMED) rezervac
 Předpokládáme, že zaměstnanci budou rezervace tvořit a rušit převážně přes mobilní telefon těsně před odjezdem do práce (případně při změně plánu z domova), systém proto musí být navržen tak, aby na mobilních klientech v budoucnu reagoval rychle.
 
 ## Unknown
-Zatím nevíme, jak systémově vyřešíme situaci, kdy zaměstnanec na rezervované místo nepřijede (no-show), a zda místo po určité době automaticky uvolníme pro ostatní.
+Zatím nevíme, jak systémově vyřešíme situaci, kdy zaměstnanec na rezervované místo nepřijede, a zda místo po určité době automaticky uvolníme pro ostatní.
 
 ## Selected future pressure
 Category: C (Changeability)
