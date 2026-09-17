@@ -31,8 +31,8 @@ Systém slouží zaměstnancům k včasnému zajištění parkovacího místa p�
 
 ## Persistent state
 
-* **O Reservation ukládáme:** ID zaměstnance, ID parkovacího místa, časový interval (Datum a čas OD-DO), stav rezervace (např. DRAFT, CONFIRMED, CANCELLED).
-* **O Resource (Parking Spot) ukládáme:** ID místa, označení (např. "B4"), typ místa (standard, EV nabíječka, ZTP), provozní stav (dostupné / mimo provoz).
+* **Reservation ukládáme:** ID zaměstnance, ID parkovacího místa, časový interval (Datum a čas OD-DO), stav rezervace (např. DRAFT, CONFIRMED, CANCELLED).
+* **Resource (Parking Spot) ukládáme:** ID místa, označení (např. "B4"), typ místa (standard, EV nabíječka, ZTP), provozní stav (dostupné / mimo provoz).
 
 ## State-changing operation
 
