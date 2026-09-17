@@ -1,13 +1,14 @@
 # Rezervační systém pro parkovací místa
-Adam Kopec
 
-Martin Dressler
+**Tým:** VibeCoders
 
-Pavel Michenka
+## Členové týmu
+- Adam Kopec
+- Martin Dressler
+- Pavel Michenka
 
-
-
-
+## Repozitář
+[GitHub repository](https://github.com/AidenCze/SWI-Project)
 
 ### Lokální spuštění projektu
 
