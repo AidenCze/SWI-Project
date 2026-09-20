@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="cs" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ParkSys{% endblock %}</title>
+    
+    <!-- Skript pro okamžité načtení správného motivu (zamezuje probliknutí) -->
+    <script>
+        const storedTheme = localStorage.getItem('theme');
+        const getPreferredTheme = () => {
+            if (storedTheme) return storedTheme;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-bs-theme', getPreferredTheme());
+    </script>
+
+    <!-- Bootstrap 5 CSS a Ikony -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Jemné stíny zůstávají pro světlý motiv, v tmavém se ztlumí */
+        .navbar, .card {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        [data-bs-theme="dark"] .navbar, [data-bs-theme="dark"] .card {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100 bg-body-tertiary">
+
+    <nav class="navbar navbar-expand-lg bg-body mb-5">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'index' %}">
+                <i class="bi bi-p-circle-fill me-2"></i>ParkSys
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto fw-medium">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Domů</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Moje rezervace</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav align-items-center">
+                    <!-- Přepínač Dark Mode -->
+                    <li class="nav-item me-3">
+                        <button class="btn btn-link nav-link px-0" id="theme-toggle" type="button" aria-label="Přepnout motiv">
+                            <i class="bi bi-moon-stars-fill fs-5" id="theme-icon"></i>
+                        </button>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item me-3">
+                            <span class="text-secondary"><i class="bi bi-person-circle me-1"></i> {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Odhlásit
+                                </button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-primary px-4" href="{% url 'login' %}">Přihlásit se</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="text-center py-4 text-secondary mt-auto">
+        <small>&copy; 2026 ParkSys. Vytvořeno pro předmět Softwarové inženýrství.</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Skript pro interakci přepínače a změnu ikony -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            const updateIcon = (theme) => {
+                if (theme === 'dark') {
+                    themeIcon.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+                    themeIcon.classList.replace('text-dark', 'text-warning'); // Sluníčko bude žluté
+                } else {
+                    themeIcon.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+                    themeIcon.classList.replace('text-warning', 'text-dark');
+                }
+            };
+
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            updateIcon(currentTheme);
+
+            toggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateIcon(newTheme);
+            });
+        });
+    </script>
+</body>
+</html>
