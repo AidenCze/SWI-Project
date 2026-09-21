@@ -1,0 +1,40 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide methods
+
+enum SpotType {
+    NORMAL
+    DISABLED_ONLY
+    EV_ONLY
+}
+
+class User <<Django Auth>> {
+    + username: CharField
+    + is_staff: BooleanField
+}
+
+class ParkingLot {
+    + name: CharField
+    + floor: IntegerField
+}
+
+class ParkingSpot {
+    + number: CharField
+    + spot_type: SpotType
+    + is_active: BooleanField
+}
+
+class Reservation {
+    + date: DateField
+    + start_time: TimeField
+    + end_time: TimeField
+    + created_at: DateTimeField
+}
+
+' Relace a kardinalita
+ParkingLot "1" -- "0..*" ParkingSpot : obsahuje >
+ParkingSpot "1" -- "0..*" Reservation : je rezervováno v >
+User "1" -- "0..*" Reservation : vytváří >
+SpotType -left-* ParkingSpot
+
+@enduml

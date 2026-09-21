@@ -1,0 +1,39 @@
+@startuml
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah
+|Zaměstnanec|
+|Systém (Django)|
+
+|Zaměstnanec|
+start
+:Výběr data a času pro parkování;
+
+|Systém (Django)|
+:Dotaz do databáze na existující\nrezervace pro zadaný termín;
+:Zobrazení volných a obsazených míst;
+
+|Zaměstnanec|
+:Vybrání volného místa;
+:Odeslání rezervačního formuláře;
+
+|Systém (Django)|
+' Rozhodovací uzel pro kontrolu dostupnosti
+if (Je vybrané místo stále volné?) then (Ano)
+    :Uložení nového objektu\nReservation do databáze;
+    |Zaměstnanec|
+    :Zobrazení stránky s potvrzením\no úspěšné rezervaci;
+else (Ne - někdo byl rychlejší)
+    |Systém (Django)|
+    :Vygenerování chybové hlášky;
+    |Zaměstnanec|
+    :Zobrazení chybové hlášky;
+    :Návrat na výběr místa v mapě;
+    stop
+endif
+
+|Zaměstnanec|
+stop
+@enduml

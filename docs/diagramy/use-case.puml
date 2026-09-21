@@ -1,0 +1,39 @@
+
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+' Nastavení barev
+skinparam usecase {
+    BackgroundColor LightGray
+    BorderColor Black
+}
+
+actor "Zaměstnanec" as emp
+actor "Správce firmy" as admin
+
+' Správce dědí práva od zaměstnance
+admin -|> emp
+
+rectangle "Rezervační systém parkování" {
+    
+    ' Use Casy Zaměstnance
+    usecase "Zobrazení volných míst" as view
+    usecase "Rezervace parkovacího místa" as reserve
+    usecase "Zrušení rezervace" as cancel
+    
+    ' Specifické Use Casy pouze pro Správce
+    usecase "Správa zaměstnanců" as manage_emps
+    usecase "Správa všech rezervací" as manage_all_res
+}
+
+' Propojení aktéra Zaměstnanec
+emp --> view
+emp --> reserve
+emp --> cancel
+
+' Propojení aktéra Správce (zbytek dědí)
+admin --> manage_emps
+admin --> manage_all_res
+
+@enduml

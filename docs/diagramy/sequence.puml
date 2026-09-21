@@ -1,0 +1,37 @@
+@startuml
+autonumber
+
+actor Zaměstnanec as zam
+participant "Šablona (Uživatelské rozhraní)" as tpl
+participant "View (Aplikační logika)" as view
+database "Databáze / Model" as db
+
+note over zam, db: Předpoklad: Zaměstnanec je již úspěšně přihlášen.
+
+== 1. Fáze: Výběr dne ==
+zam -> tpl ++ : Zvolí požadované datum
+tpl -> view ++ : Požadavek na načtení míst
+
+view -> db ++ : Dotaz na neobsazená místa
+db --> view -- : Seznam dostupných míst
+
+view --> tpl -- : Předání dat k vykreslení
+tpl --> zam -- : Zobrazení plánku s volnými místy
+
+== 2. Fáze: Potvrzení místa ==
+zam -> tpl ++ : Vybere konkrétní místo a potvrdí
+tpl -> view ++ : Požadavek na vytvoření rezervace
+
+view -> db ++ : Kontrola dostupnosti a zápis
+
+alt Místo je stále volné (Úspěch)
+    db --> view -- : Záznam úspěšně uložen
+    view --> tpl -- : Zobrazení potvrzovací obrazovky
+    tpl --> zam -- : Zpráva: "Rezervace byla úspěšná"
+else Místo bylo mezitím obsazeno (Souběh)
+    db --> view -- : Zápis zamítnut
+    view --> tpl -- : Znovuvykreslení výběru s chybovou hláškou
+    tpl --> zam -- : Upozornění: "Místo již někdo obsadil, vyberte jiné"
+end
+
+@enduml
