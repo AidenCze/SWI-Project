@@ -1,5 +1,6 @@
-
 @startuml
+title Use Case diagram.
+
 left to right direction
 skinparam packageStyle rectangle
 
@@ -17,6 +18,9 @@ admin -|> emp
 
 rectangle "Rezervační systém parkování" {
     
+    ' Společný Use Case
+    usecase "Přihlášení do systému" as login
+    
     ' Use Casy Zaměstnance
     usecase "Zobrazení volných míst" as view
     usecase "Rezervace parkovacího místa" as reserve
@@ -28,6 +32,7 @@ rectangle "Rezervační systém parkování" {
 }
 
 ' Propojení aktéra Zaměstnanec
+emp --> login
 emp --> view
 emp --> reserve
 emp --> cancel
