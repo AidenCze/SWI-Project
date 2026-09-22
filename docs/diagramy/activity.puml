@@ -23,17 +23,13 @@ start
 ' Rozhodovací uzel pro kontrolu dostupnosti
 if (Je vybrané místo stále volné?) then (Ano)
     :Uložení nového objektu\nReservation do databáze;
-    |Zaměstnanec|
-    :Zobrazení stránky s potvrzením\no úspěšné rezervaci;
+    :Příprava potvrzovací zprávy;
 else (Ne - někdo byl rychlejší)
-    |Systém (Django)|
     :Vygenerování chybové hlášky;
-    |Zaměstnanec|
-    :Zobrazení chybové hlášky;
-    :Návrat na výběr místa v mapě;
-    stop
 endif
 
+' Společné sjednocení čistě na frontendu (u zaměstnance)
 |Zaměstnanec|
+:Zobrazení výsledku akce\n(Úspěšná rezervace / Nový výběr);
 stop
 @enduml
