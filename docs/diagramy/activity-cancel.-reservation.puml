@@ -1,0 +1,37 @@
+@startuml
+title Activity diagram. Proces zrušení rezervace zaměstnancem
+
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah
+|Zaměstnanec|
+|Systém (Django)|
+
+|Zaměstnanec|
+start
+:Zobrazení přehledu vlastních rezervací\n(Dashboard);
+
+|Systém (Django)|
+:Dotaz do databáze na\naktuální rezervace uživatele;
+:Vykreslení seznamu rezervací;
+
+|Zaměstnanec|
+:Výběr konkrétní rezervace;
+:Kliknutí na tlačítko "Zrušit"\na potvrzení volby;
+
+|Systém (Django)|
+' Rozhodovací uzel pro kontrolu platnosti zrušení
+if (Je možné rezervaci zrušit?\n(např. termín ještě neproběhl)) then (Ano)
+    :Odstranění objektu\nReservation z databáze;
+    :Příprava zprávy o úspěšném zrušení;
+else (Ne - termín již minul)
+    :Vygenerování chybové hlášky;
+endif
+
+' Společné sjednocení čistě na frontendu (u zaměstnance)
+|Zaměstnanec|
+:Zobrazení výsledku akce\n(Úspěšně zrušeno / Nelze zrušit);
+stop
+@enduml

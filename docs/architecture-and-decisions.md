@@ -24,6 +24,8 @@ Rozděluje rezervační proces na kroky prováděné uživatelem na frontendu a 
 
 ![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-reservation.puml)
 
+![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-cancel-reservation.puml)
+
 ---
 
 ## 4. Class Diagram
