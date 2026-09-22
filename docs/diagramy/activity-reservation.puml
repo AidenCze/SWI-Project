@@ -1,4 +1,6 @@
 @startuml
+title Activity diagram. Proces of reservation by employee.
+
 skinparam ActivityBackgroundColor LightGray
 skinparam ActivityBorderColor Black
 skinparam defaultTextAlignment center
