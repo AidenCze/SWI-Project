@@ -28,4 +28,6 @@ urlpatterns = [
     
     # Nový řádek pro vytvoření rezervace
     path('reservations/new/', rezervace_views.reservation_create_view, name='reservation_create'),
+    path('reservations/new/grid/', rezervace_views.reservation_grid_fragment_view, name='reservation_grid_fragment'),
+    path('reservations/<int:reservation_id>/delete/', rezervace_views.reservation_delete_view, name='reservation_delete'),
 ]

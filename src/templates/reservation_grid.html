@@ -1,0 +1,45 @@
+<div class="d-grid gap-4">
+    {% for group in spot_groups %}
+        <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h6 class="fw-bold mb-1">{{ group.lot_name }}</h6>
+                    <div class="text-secondary small">Patro {{ group.floor }}</div>
+                </div>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+                {% for spot in group.spots %}
+                    <div class="col">
+                        <label class="w-100 h-100">
+                            <input
+                                class="btn-check"
+                                type="radio"
+                                name="spot"
+                                id="spot-{{ spot.id }}"
+                                value="{{ spot.id }}"
+                                {% if selected_spot_id and selected_spot_id == spot.id %}checked{% endif %}
+                                {% if spot.is_occupied and spot.id != editing_reservation.spot_id %}disabled{% endif %}
+                            >
+                            <span class="btn w-100 h-100 text-start p-3 rounded-4 border position-relative {% if spot.is_occupied %}btn-outline-secondary text-secondary opacity-50{% else %}btn-outline-primary{% endif %}">
+                                <span class="d-flex justify-content-between align-items-start gap-2">
+                                    <span>
+                                        <span class="fw-bold d-block">{{ spot.number }}</span>
+                                        <span class="small d-block">{{ spot.get_spot_type_display }}</span>
+                                    </span>
+                                    {% if editing_reservation and spot.id == editing_reservation.spot_id %}
+                                        <span class="badge text-bg-primary">Vaše rezervace</span>
+                                    {% elif spot.is_occupied %}
+                                        <span class="badge text-bg-secondary">Obsazeno</span>
+                                    {% else %}
+                                        <span class="badge text-bg-success">Volné</span>
+                                    {% endif %}
+                                </span>
+                                <span class="small text-secondary d-block mt-2">{{ spot.lot.name }}</span>
+                            </span>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endfor %}
+</div>

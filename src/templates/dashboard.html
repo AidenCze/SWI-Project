@@ -23,6 +23,7 @@
                 <tr>
                     <th class="ps-4 py-3">Datum</th>
                     <th class="py-3">Místo</th>
+                    <th class="py-3">Čas</th>
                     <th class="py-3">Status</th>
                     <th class="text-end pe-4 py-3">Akce</th>
                 </tr>
@@ -32,15 +33,19 @@
                 <tr>
                     <td class="ps-4">
                         <i class="bi bi-calendar-event text-primary me-2"></i> 
-                        <span class="fw-medium">{{ r.datum|date:"d. m. Y" }}</span>
+                        <span class="fw-medium">{{ r.date|date:"d. m. Y" }}</span>
                     </td>
                     <td>
                         <span class="badge bg-secondary text-light border px-2 py-1 fs-6">
-                            <i class="bi bi-p-square me-1"></i> {{ r.misto.cislo }}
+                            <i class="bi bi-p-square me-1"></i> {{ r.spot.number }}
                         </span>
+                        <div class="text-secondary small mt-1">{{ r.spot.lot.name }}</div>
                     </td>
                     <td>
-                        <span class="badge bg-success px-2 py-1">Aktivní</span>
+                        <span class="fw-medium">{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary px-2 py-1">Rezervováno</span>
                     </td>
                     <td class="text-end pe-4">
                         <form method="post" action="{% url 'reservation_delete' r.id %}" class="d-inline">

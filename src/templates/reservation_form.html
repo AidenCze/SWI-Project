@@ -4,53 +4,168 @@
 
 {% block content %}
 <div class="row justify-content-center mt-4">
-    <div class="col-md-6 col-lg-5">
-        
+    <div class="col-xl-10">
         <div class="text-center mb-4">
-            <h2 class="fw-bold text-body">Nová rezervace</h2>
-            <p class="text-secondary">Vyberte si datum a dostupné místo</p>
+            <h2 class="fw-bold text-body">{% if editing_reservation %}Upravit rezervaci{% else %}Nová rezervace{% endif %}</h2>
+            <p class="text-secondary mb-0">Vyberte datum, čas a konkrétní parkovací místo z přehledné mřížky.</p>
         </div>
 
-        <div class="card bg-body p-4 p-md-5">
-            <form method="post">
-                {% csrf_token %}
-                
-                <!-- Zobrazení celkových chyb formuláře -->
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <!-- Vykreslení jednotlivých polí -->
-                {% for field in form %}
-                    <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label fw-medium">{{ field.label }}</label>
-                        {{ field }} <!-- Samotný input -->
-                        
-                        {% if field.help_text %}
-                            <div class="form-text">{{ field.help_text }}</div>
-                        {% endif %}
-                        
-                        {% for error in field.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                
-                <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg py-2">
-                        <i class="bi bi-check2-circle me-1"></i> Potvrdit rezervaci
-                    </button>
-                    <a href="{% url 'dashboard' %}" class="btn btn-link py-2 text-secondary text-decoration-none fw-medium">
-                        Zrušit
-                    </a>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
-            </form>
-        </div>
-        
+            {% endif %}
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card bg-body p-4 h-100">
+                        <h5 class="fw-bold mb-3">Parametry rezervace</h5>
+
+                        <div class="mb-3">
+                            <label for="{{ form.date.id_for_label }}" class="form-label fw-medium">{{ form.date.label }}</label>
+                            {{ form.date }}
+                            {% for error in form.date.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label for="{{ form.start_time.id_for_label }}" class="form-label fw-medium">{{ form.start_time.label }}</label>
+                                {{ form.start_time }}
+                                {% for error in form.start_time.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-6">
+                                <label for="{{ form.end_time.id_for_label }}" class="form-label fw-medium">{{ form.end_time.label }}</label>
+                                {{ form.end_time }}
+                                {% for error in form.end_time.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 rounded-3 bg-body-tertiary border" id="reservation-summary">
+                            <div class="small text-secondary mb-1">Zvolený termín</div>
+                            <div class="fw-semibold" id="selected-date-text">{{ selected_date|date:"d. m. Y" }}</div>
+                            <div class="text-secondary" id="selected-time-text">{{ selected_start }} - {{ selected_end }}</div>
+                        </div>
+
+                        <div class="mt-4 d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg py-2">
+                                <i class="bi bi-check2-circle me-1"></i> {% if editing_reservation %}Uložit změny{% else %}Potvrdit rezervaci{% endif %}
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-link py-2 text-secondary text-decoration-none fw-medium">
+                                Zrušit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card bg-body p-4 h-100">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">Výběr místa</h5>
+                                <p class="text-secondary mb-0">Volná místa jsou aktivní. Obsazená jsou šedá a nelze je zvolit.</p>
+                            </div>
+                            <span class="badge text-bg-secondary" id="spot-group-count">{{ spot_groups|length }} parkovišť</span>
+                        </div>
+
+                        {% if form.spot.errors %}
+                            <div class="alert alert-danger py-2">
+                                {% for error in form.spot.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div id="spot-grid">
+                            {% include 'reservation_grid.html' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('{{ form.date.id_for_label }}');
+        const startInput = document.getElementById('{{ form.start_time.id_for_label }}');
+        const endInput = document.getElementById('{{ form.end_time.id_for_label }}');
+        const spotGrid = document.getElementById('spot-grid');
+        const selectedDateText = document.getElementById('selected-date-text');
+        const selectedTimeText = document.getElementById('selected-time-text');
+        const spotGroupCount = document.getElementById('spot-group-count');
+
+        const formatDate = (value) => {
+            if (!value) {
+                return '';
+            }
+
+            const [year, month, day] = value.split('-');
+            return `${day}. ${month}. ${year}`;
+        };
+
+        const refreshSelectionSummary = () => {
+            if (selectedDateText && dateInput) {
+                selectedDateText.textContent = formatDate(dateInput.value);
+            }
+            if (selectedTimeText && startInput && endInput) {
+                selectedTimeText.textContent = `${startInput.value} - ${endInput.value}`;
+            }
+        };
+
+        const refreshGrid = async () => {
+            refreshSelectionSummary();
+
+            if (!spotGrid) {
+                return;
+            }
+
+            const params = new URLSearchParams();
+            if (dateInput && dateInput.value) {
+                params.set('date', dateInput.value);
+            }
+            if (startInput && startInput.value) {
+                params.set('start_time', startInput.value);
+            }
+            if (endInput && endInput.value) {
+                params.set('end_time', endInput.value);
+            }
+
+            const selectedSpot = document.querySelector('input[name="spot"]:checked');
+            if (selectedSpot) {
+                params.set('spot', selectedSpot.value);
+            }
+
+            const response = await fetch(`{% url 'reservation_grid_fragment' %}?${params.toString()}`);
+            spotGrid.innerHTML = await response.text();
+
+            const updatedSpotInputs = Array.from(spotGrid.querySelectorAll('input[name="spot"]'));
+            updatedSpotInputs.forEach((input) => {
+                input.addEventListener('change', refreshGrid);
+            });
+        };
+
+        [dateInput, startInput, endInput].forEach((input) => {
+            if (input) {
+                input.addEventListener('change', refreshGrid);
+            }
+        });
+
+        refreshSelectionSummary();
+
+        Array.from(document.querySelectorAll('input[name="spot"]')).forEach((input) => {
+            input.addEventListener('change', refreshGrid);
+        });
+    });
+</script>
 {% endblock %}
