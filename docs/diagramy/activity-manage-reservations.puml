@@ -1,0 +1,38 @@
+@startuml
+title Activity diagram. Proces správy všech rezervací
+
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah
+|Správce firmy|
+|Systém (Django)|
+
+|Správce firmy|
+start
+:Zobrazení globálního přehledu\nvšech firemních rezervací;
+
+|Systém (Django)|
+:Dotaz do databáze na\nvšechny existující rezervace;
+:Vykreslení tabulky (s možností filtrace);
+
+|Správce firmy|
+:Vyhledání konkrétní rezervace\n(podle data, místa či zaměstnance);
+:Kliknutí na "Zrušit rezervaci"\na potvrzení akce;
+
+|Systém (Django)|
+' Rozhodovací uzel pro kontrolu
+if (Je možné rezervaci zrušit?\n(např. termín ještě neproběhl)) then (Ano)
+    :Odstranění objektu\nReservation z databáze;
+    :Odeslání informačního e-mailu\nzaměstnanci o zrušení místa;
+    :Příprava zprávy o úspěšném zrušení;
+else (Ne - termín již minul)
+    :Vygenerování chybové hlášky\n(Historické rezervace nelze mazat);
+endif
+
+' Společné sjednocení na straně klienta
+|Správce firmy|
+:Zobrazení výsledku akce\n(Úspěšně zrušeno / Zobrazení chyby);
+stop
+@enduml
