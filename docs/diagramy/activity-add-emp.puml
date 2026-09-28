@@ -1,0 +1,39 @@
+@startuml
+title Activity diagram. Proces přidání zaměstnance
+
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah
+|Správce firmy|
+|Systém (Django)|
+
+|Správce firmy|
+start
+:Otevření formuláře pro\npřidání nového zaměstnance;
+
+|Systém (Django)|
+:Vykreslení formuláře;
+
+|Správce firmy|
+:Zadání e-mailové adresy\n(slouží i jako uživatelské jméno);
+:Odeslání formuláře;
+
+|Systém (Django)|
+' Kontrola, zda email už není v databázi
+if (Existuje již uživatel\ns tímto e-mailem?) then (Ano)
+    :Vygenerování chybové hlášky\n(Duplicitní e-mail);
+else (Ne)
+    :Vytvoření nového uživatelského\núčtu v databázi;
+    :Vygenerování náhodného\nbezpečného hesla;
+    :Uložení zahashovaného hesla;
+    :Odeslání e-mailu s heslem a\ninstrukcemi novému zaměstnanci;
+    :Příprava potvrzovací zprávy;
+endif
+
+' Společné sjednocení na straně klienta
+|Správce firmy|
+:Zobrazení výsledku akce\n(Úspěšně přidáno / Zobrazení chyby);
+stop
+@enduml
