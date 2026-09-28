@@ -24,4 +24,6 @@ Rozděluje rezervační proces na kroky prováděné uživatelem na frontendu a 
 
 ![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-add-emp.puml)
 
+![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-delete-emp.puml)
+
 
