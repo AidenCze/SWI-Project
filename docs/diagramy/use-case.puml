@@ -22,7 +22,7 @@ rectangle "Rezervační systém parkování" {
     usecase "Přihlášení do systému" as login
     
     ' Use Casy Zaměstnance
-    usecase "Zobrazení volných míst" as view
+  
     usecase "Rezervace parkovacího místa" as reserve
     usecase "Zrušení rezervace" as cancel
     
