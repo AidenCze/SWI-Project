@@ -1,5 +1,5 @@
 @startuml
-title Activity diagram. Proces of reservation by employee.
+title Activity diagram. Proces rezervace zaměstnancem.
 
 skinparam ActivityBackgroundColor LightGray
 skinparam ActivityBorderColor Black
