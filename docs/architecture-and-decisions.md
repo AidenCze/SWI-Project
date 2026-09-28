@@ -11,10 +11,10 @@ Zachycuje hlavní případy užití z pohledu zaměstnance a správce firmy.
 
 ---
 
-## 2. Sekvenční diagram
-Popisuje interakci uživatele, aplikační logiky (Django views) a databáze během procesu vytváření rezervace, včetně ošetření chybového stavu.
+[comment]: <> (## 2. Sekvenční diagram)
+[comment]: <> (Popisuje interakci uživatele, aplikační logiky (Django views) a databáze během procesu vytváření rezervace, včetně ošetření chybového stavu.)
 
-![Sequence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence.puml)
+[comment]: <> (![Sequence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence.puml))
 
 ---
 
