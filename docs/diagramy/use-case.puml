@@ -22,7 +22,7 @@ rectangle "Rezervační systém parkování" {
     usecase "Přihlášení do systému" as login
     
     ' Use Casy Zaměstnance
-  
+    usecase "Zobrazení volných míst" as view
     usecase "Rezervace parkovacího místa" as reserve
     usecase "Zrušení rezervace" as cancel
     
@@ -30,7 +30,6 @@ rectangle "Rezervační systém parkování" {
     usecase "Přidání zaměstnance" as add_emp
     usecase "Odebrání zaměstnance" as delete_emp
     usecase "Správa všech rezervací" as manage_all_res
-    usecase "Odebrání zaměstnance" as delete_emp
 }
 
 ' Propojení aktéra Zaměstnanec
@@ -40,7 +39,8 @@ emp --> reserve
 emp --> cancel
 
 ' Propojení aktéra Správce (zbytek dědí)
-admin --> manage_emps
+admin --> add_emp
+admin --> delete_emp
 admin --> manage_all_res
 
 @enduml
