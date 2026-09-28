@@ -1,0 +1,38 @@
+@startuml
+title Activity diagram. Proces odebrání zaměstnance
+
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah
+|Správce firmy|
+|Systém (Django)|
+
+|Správce firmy|
+start
+:Zobrazení seznamu zaměstnanců;
+
+|Systém (Django)|
+:Dotaz do databáze na\nvšechny registrované zaměstnance;
+:Vykreslení přehledu uživatelů;
+
+|Správce firmy|
+:Výběr konkrétního zaměstnance;
+:Kliknutí na tlačítko "Odebrat"\na potvrzení varovného dialogu;
+
+|Systém (Django)|
+' Kontrola proti chybám (např. smazání sama sebe)
+if (Je možné zaměstnance odebrat?\n(např. správce nemaže sám sebe)) then (Ano)
+    :Zrušení všech budoucích\nrezervací tohoto zaměstnance;
+    :Odstranění uživatelského\núčtu z databáze;
+    :Příprava zprávy o úspěšném odebrání;
+else (Ne)
+    :Vygenerování chybové hlášky\n(Nelze smazat aktuálně přihlášený účet);
+endif
+
+' Společné sjednocení na straně klienta
+|Správce firmy|
+:Zobrazení výsledku akce\n(Úspěšně odebráno / Zobrazení chyby);
+stop
+@enduml
