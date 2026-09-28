@@ -27,8 +27,10 @@ rectangle "Rezervační systém parkování" {
     usecase "Zrušení rezervace" as cancel
     
     ' Specifické Use Casy pouze pro Správce
-    usecase "Správa zaměstnanců" as manage_emps
+    usecase "Přidání zaměstnance" as add_emp
+    usecase "Odebrání zaměstnance" as delete_emp
     usecase "Správa všech rezervací" as manage_all_res
+    usecase "Odebrání zaměstnance" as delete_emp
 }
 
 ' Propojení aktéra Zaměstnanec
