@@ -1,0 +1,38 @@
+@startuml
+title Activity diagram. Proces přihlášení do systému
+
+skinparam ActivityBackgroundColor LightGray
+skinparam ActivityBorderColor Black
+skinparam defaultTextAlignment center
+
+' Definice plaveckých drah (platí pro Zaměstnance i Správce)
+|Uživatel|
+|Systém (Django)|
+
+|Uživatel|
+start
+:Požadavek na zobrazení přihlášení;
+
+|Systém (Django)|
+:Vykreslení přihlašovacího formuláře;
+
+|Uživatel|
+:Zadání uživatelského jména a hesla;
+:Odeslání údajů k ověření;
+
+|Systém (Django)|
+:Ověření existence uživatele;
+:Ověření shody hesla (hash);
+
+if (Jsou zadané údaje platné?) then (Ano)
+    :Vytvoření uživatelské relace (session);
+    :Přesměrování na Dashboard;
+else (Ne)
+    :Vygenerování chybové hlášky\n(Neplatné jméno nebo heslo);
+endif
+
+' Společné sjednocení na straně klienta
+|Uživatel|
+:Zobrazení výsledku akce\n(Vstup do systému / Zobrazení chyby a nový pokus);
+stop
+@enduml
