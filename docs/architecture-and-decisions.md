@@ -14,7 +14,7 @@ Zachycuje hlavní případy užití z pohledu zaměstnance a správce firmy.
 ## 2. Sekvenční diagram
 Popisuje interakci uživatele, aplikační logiky (Django views) a databáze během procesu vytváření rezervace, včetně ošetření chybového stavu.
 
-![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence.puml)
+![Sequence Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence.puml)
 
 ---
 
@@ -22,7 +22,9 @@ Popisuje interakci uživatele, aplikační logiky (Django views) a databáze bě
 Rozděluje rezervační proces na kroky prováděné uživatelem na frontendu a operace zpracovávané na pozadí v Djangu.
 
 
-![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-reservation.puml)
+![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-reservation.puml)
 
-![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-cancel-reservation.puml)
+![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-cancel-reservation.puml)
+
+![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-login.puml)
 
