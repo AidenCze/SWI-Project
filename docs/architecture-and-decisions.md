@@ -27,3 +27,7 @@
 
 
 
+## 2. Sequence Diagram
+
+
+![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-cancel-reservation.puml)
