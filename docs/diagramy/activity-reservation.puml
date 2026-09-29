@@ -1,5 +1,5 @@
 @startuml
-title Activity diagram. Proces rezervace zaměstnancem.
+title Activity diagram. Proces rezervace zaměstnancem (s dočasným zámkem)
 
 skinparam ActivityBackgroundColor LightGray
 skinparam ActivityBorderColor Black
@@ -18,20 +18,33 @@ start
 :Zobrazení volných a obsazených míst;
 
 |Zaměstnanec|
-:Vybrání volného místa;
-:Odeslání rezervačního formuláře;
+:Vybrání konkrétního volného místa;
 
 |Systém (Django)|
-' Rozhodovací uzel pro kontrolu dostupnosti
-if (Je vybrané místo stále volné?) then (Ano)
-    :Uložení nového objektu\nReservation do databáze;
-    :Příprava potvrzovací zprávy;
-else (Ne - někdo byl rychlejší)
-    :Vygenerování chybové hlášky;
+' První kontrola: Byli jsme první, kdo na místo klikl?
+if (Je místo v tento moment volné?) then (Ano)
+    :Aktivace dočasného zámku místa\n(např. na 5 minut pro ostatní skryto);
+    
+    |Zaměstnanec|
+    :Potvrzení a odeslání\nrezervačního formuláře;
+    
+    |Systém (Django)|
+    ' Druhá kontrola: Stihl to v časovém limitu?
+    if (Stihl uživatel potvrdit\nrezervaci v čase zámku?) then (Ano)
+        :Uložení nového objektu\nReservation do databáze;
+        :Odstranění dočasného zámku;
+        :Příprava potvrzovací zprávy;
+    else (Ne - limit vypršel)
+        :Uvolnění místa pro ostatní;
+        :Vygenerování chybové hlášky\n(Vypršel časový limit);
+    endif
+
+else (Ne)
+    :Vygenerování chybové hlášky\n(Místo si právě rezervuje někdo jiný);
 endif
 
 ' Společné sjednocení čistě na frontendu (u zaměstnance)
 |Zaměstnanec|
-:Zobrazení výsledku akce\n(Úspěšná rezervace / Nový výběr);
+:Zobrazení výsledku akce\n(Úspěšná rezervace / Upozornění na chybu);
 stop
 @enduml
