@@ -1,0 +1,50 @@
+@startuml
+title Sekvenční diagram: Zrušení rezervace zaměstnancem
+
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+actor "Zaměstnanec" as emp
+participant "Prohlížeč\n(Frontend)" as ui
+participant "Systém\n(Django Views)" as view
+database "Databáze\n(Modely)" as db
+
+== Zobrazení Dashboardu ==
+emp -> ui : Požadavek na zobrazení přehledu
+ui -> view : GET /dashboard/
+activate view
+
+view -> db : Dotaz na aktuální rezervace uživatele
+activate db
+db --> view : Vrácení seznamu rezervací (QuerySet)
+deactivate db
+
+view --> ui : Vykreslení šablony se seznamem
+deactivate view
+ui --> emp : Zobrazení vlastních rezervací
+
+== Proces zrušení ==
+emp -> ui : Výběr rezervace, kliknutí na "Zrušit"\na potvrzení dialogu
+ui -> view : POST /rezervace/{id}/zrusit/
+activate view
+
+view -> db : Dotaz na detail konkrétní rezervace
+activate db
+db --> view : Data o rezervaci (včetně času)
+deactivate db
+
+alt Je možné rezervaci zrušit (termín ještě neproběhl)
+    view -> db : Odstranění objektu (delete)
+    activate db
+    db --> view : Potvrzení smazání
+    deactivate db
+    view --> ui : Přesměrování + Příprava Success zprávy
+else Termín již minul (nelze zrušit)
+    view --> ui : Přesměrování + Příprava Error zprávy
+end
+deactivate view
+
+ui --> emp : Zobrazení výsledku (Úspěšně zrušeno / Nelze zrušit)
+
+@enduml
