@@ -1,11 +1,9 @@
 # Architektura rezervačního systému
 
-Tento dokument popisuje návrh a architekturu systému pro rezervaci parkovacích míst.
 
 ---
 
 ## 1. Use Case Diagram
-Zachycuje hlavní případy užití z pohledu zaměstnance a správce firmy.
 
 ![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/use-case.puml)
 
@@ -13,7 +11,6 @@ Zachycuje hlavní případy užití z pohledu zaměstnance a správce firmy.
 ---
 
 ## 3. Activity Diagram
-Rozděluje rezervační proces na kroky prováděné uživatelem na frontendu a operace zpracovávané na pozadí v Djangu.
 
 
 ![Activity Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-reservation.puml)
