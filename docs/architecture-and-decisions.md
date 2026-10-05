@@ -20,21 +20,19 @@ Vycházejí přímo z navrženého Use Case diagramu.
 
 ---
 
-## 3. Architektonická rozhodnutí (ADR)
-* **ADR 1: Dědičnost uživatelských rolí**
+## 3. Architektonická rozhodnutí
+* **1: Dědičnost uživatelských rolí**
   Pro zjednodušení autorizační logiky je architektura navržena tak, že role Správce plně dědí oprávnění Zaměstnance.
-* **ADR 2: Ochrana proti souběhu transakcí (Race Condition)**
+* **2: Ochrana proti souběhu transakcí (Race Condition)**
   Při kliknutí na volné místo se aktivuje dočasný zámek (např. na 5 minut), během kterého je místo pro ostatní uživatele skryto. Pokud uživatel rezervaci nepotvrdí ve stanoveném limitu, místo se opět uvolní.
-* **ADR 3: Kaskádové mazání uživatelů**
+* **3: Kaskádové mazání uživatelů**
   Při odebrání zaměstnance z databáze systém nejprve automaticky zruší všechny jeho budoucí rezervace, čímž se místa uvolní pro ostatní uživatele.
-* **ADR 4: Restrikce manipulace s historií**
-  Logika zrušení rezervace (jak pro zaměstnance, tak pro správce) explicitně kontroluje platnost termínu; historické rezervace, jejichž termín již minul, nelze rušit.
 
 ---
 
 ## 4. Použité technologie
 * **Backend:** Python 3.12, Django.
-* **Frontend:** Django Templates, HTML5, Bootstrap.
+* **Frontend:** Django Templates, HTML5.
 * **Databáze:** SQLite (vývojové prostředí).
 
 ---
