@@ -1,6 +1,6 @@
 # Architektura a specifikace rezervačního systému ParkSys
 
-## 1. Rozsah projektu a MVP (Minimum Viable Product)
+## 1. Rozsah projektu
 Cílem projektu je vytvořit funkční rezervační systém pro správu firemních parkovacích míst.
 * **In scope:** Autentizace uživatelů, interaktivní výběr a rezervace parkovacích míst, správa vlastních rezervací, administrátorský modul pro řízení uživatelů a globálních rezervací.
 * **Out of scope:**  Automatické rozpoznávání SPZ kamerovým systémem, pronájem míst třetím stranám.
@@ -10,7 +10,7 @@ Cílem projektu je vytvořit funkční rezervační systém pro správu firemní
 ### Funkční požadavky
 Vycházejí přímo z navrženého Use Case diagramu.
 * Společnou funkcí pro všechny uživatele je přihlášení do systému, které ověřuje existenci uživatele, shodu hesla a vytváří uživatelskou relaci.
-* **Zaměstnanec:** Může provádět rezervaci parkovacího místa a následně provést zrušení rezervace.
+* **Zaměstnanec:** Může provádět přihlášení, rezervaci parkovacího místa a následně provést zrušení rezervace.
 * **Správce firmy:** Architektonicky dědí všechna práva běžného zaměstnance. Navíc obsluhuje přidání zaměstnance, odebrání zaměstnance a komplexní správu všech rezervací.
 
 ### Nefunkční požadavky
