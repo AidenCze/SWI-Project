@@ -1,0 +1,46 @@
+@startuml
+title Sekvenční diagram: Proces přihlášení do systému
+
+skinparam maxMessageSize 150
+
+skinparam BoxPadding 10
+
+actor "Uživatel\n(Zaměstnanec / Správce)" as user
+participant "Prohlížeč\n(Frontend)" as ui
+participant "Systém\n(Django Views)" as view
+database "Databáze\n(Modely)" as db
+
+== Zobrazení přihlášení ==
+user -> ui : Požadavek na přihlášení
+ui -> view : GET /login/
+activate view
+view --> ui : Vykreslení přihlašovacího formuláře
+deactivate view
+ui --> user : Zobrazení formuláře
+
+== Ověření a autentizace ==
+user -> ui : Zadání e-mailu a hesla, odeslání
+ui -> view : POST data (e-mail, heslo)
+activate view
+
+view -> db : Dotaz na existenci uživatele podle e-mailu
+activate db
+db --> view : Záznam uživatele (včetně zahashovaného hesla)
+deactivate db
+
+view -> view : Porovnání zadaného hesla\ns uloženým hashem
+
+alt Údaje jsou platné (shoda hesla)
+    view -> db : Uložení dat o uživatelské relaci (Session)
+    activate db
+    db --> view : Potvrzení
+    deactivate db
+    view --> ui : Přesměrování na Dashboard
+else Neplatný uživatel nebo heslo
+    view --> ui : Znovunačtení formuláře s chybovou hláškou
+end
+deactivate view
+
+ui --> user : Zobrazení výsledku (Vstup do systému / Chyba)
+
+@enduml
