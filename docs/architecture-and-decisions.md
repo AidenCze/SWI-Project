@@ -41,6 +41,8 @@ Vycházejí přímo z navrženého Use Case diagramu.
 
 ### 5.1 Use Case Diagram
 
+![Use Case Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/use-case.puml)
+
 
 ### 5.2 Activity Diagramy
 
