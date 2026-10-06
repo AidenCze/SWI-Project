@@ -2,7 +2,7 @@
 title Sekvenční diagram: Zrušení rezervace zaměstnancem
 
 skinparam maxMessageSize 150
-skinparam ParticipantPadding 20
+
 skinparam BoxPadding 10
 
 actor "Zaměstnanec" as emp
