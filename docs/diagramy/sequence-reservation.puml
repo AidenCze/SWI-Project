@@ -1,0 +1,72 @@
+@startuml
+title Sekvenční diagram: Proces rezervace zaměstnancem (s dočasným zámkem)
+
+skinparam maxMessageSize 150
+
+skinparam BoxPadding 10
+
+actor "Zaměstnanec" as emp
+participant "Prohlížeč\n(Frontend)" as ui
+participant "Systém\n(Django Views)" as view
+database "Databáze\n(Modely)" as db
+
+== Zjištění dostupnosti ==
+emp -> ui : Výběr data a času pro parkování
+ui -> view : GET požadavek s vybraným termínem
+activate view
+
+view -> db : Dotaz na existující rezervace pro zadaný termín
+activate db
+db --> view : Vrácení seznamu obsazených míst
+deactivate db
+
+view --> ui : Zobrazení volných a obsazených míst
+deactivate view
+
+== Pokus o rezervaci a dočasný zámek ==
+emp -> ui : Vybrání konkrétního volného místa
+ui -> view : Požadavek na vytvoření zámku
+activate view
+
+view -> db : Kontrola, zda je místo stále volné
+activate db
+db --> view : Výsledek kontroly
+deactivate db
+
+alt Je místo v tento moment volné?
+    view -> db : Zápis dočasného zámku (na 5 minut)
+    activate db
+    db --> view : Potvrzení aktivace zámku
+    deactivate db
+    view --> ui : Místo uzamčeno, čekání na potvrzení uživatelem
+    
+    emp -> ui : Potvrzení a odeslání rezervačního formuláře
+    ui -> view : POST data formuláře
+    
+    alt Stihl uživatel potvrdit rezervaci v čase zámku?
+        view -> db : Uložení nového objektu Reservation do databáze
+        activate db
+        db --> view : Potvrzení uložení
+        
+        view -> db : Odstranění dočasného zámku
+        db --> view : Zámek odstraněn
+        deactivate db
+        
+        view --> ui : Přesměrování + Příprava potvrzovací zprávy
+    else Limit vypršel (Ne)
+        view -> db : Uvolnění místa pro ostatní (zrušení zámku)
+        activate db
+        db --> view : Místo uvolněno
+        deactivate db
+        
+        view --> ui : Vygenerování chybové hlášky (Vypršel časový limit)
+    end
+
+else Někdo byl rychlejší (Ne)
+    view --> ui : Vygenerování chybové hlášky (Místo si právě rezervuje někdo jiný)
+end
+deactivate view
+
+ui --> emp : Zobrazení výsledku akce (Úspěšná rezervace / Upozornění na chybu)
+
+@enduml
