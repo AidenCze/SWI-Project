@@ -1,40 +1,67 @@
 @startuml
-skinparam classAttributeIconSize 0
-hide methods
+title Class diagram: Databázové modely rezervačního systému
 
-enum SpotType {
-    NORMAL
-    DISABLED_ONLY
-    EV_ONLY
+skinparam class {
+    BackgroundColor LightGray
+    ArrowColor Black
+    BorderColor Black
 }
 
-class User <<Django Auth>> {
-    + username: CharField
-    + is_staff: BooleanField
+' Skrytí prázdných částí pro větší přehlednost
+hide empty methods
+
+class "User (Uživatel)" as User {
+    + id : Integer
+    + email : String [unique]
+    + password : String
+    + is_staff : Boolean
+    + is_active : Boolean
+    ---
+    + set_password(raw_password: String) : void
 }
 
-class ParkingLot {
-    + name: CharField
-    + floor: IntegerField
+class "ParkingSpot (Parkovací místo)" as Spot {
+    + id : Integer
+    + number : String [unique]
+    + is_active : Boolean
+    + locked_until : DateTime [nullable]
+    ---
+    + is_locked() : Boolean
+    + lock_spot(user: User) : void
+    + unlock_spot() : void
 }
 
-class ParkingSpot {
-    + number: CharField
-    + spot_type: SpotType
-    + is_active: BooleanField
+class "Reservation (Rezervace)" as Res {
+    + id : Integer
+    + date : Date
+    + created_at : DateTime
+    ---
+    + is_cancelable() : Boolean
 }
 
-class Reservation {
-    + date: DateField
-    + start_time: TimeField
-    + end_time: TimeField
-    + created_at: DateTimeField
-}
+' Relace (vztahy) mezi modely
+User "1" -- "0..*" Res : "vytváří >"
+Spot "1" -- "0..*" Res : "je rezervováno pro >"
+User "0..1" -- "0..*" Spot : "dočasně zamyká >"
 
-' Relace a kardinalita
-ParkingLot "1" -- "0..*" ParkingSpot : obsahuje >
-ParkingSpot "1" -- "0..*" Reservation : je rezervováno v >
-User "1" -- "0..*" Reservation : vytváří >
-SpotType -left-* ParkingSpot
+' Vysvětlující poznámky pro vyučujícího
+note left of User
+  Správce firmy se od běžného
+  zaměstnance liší pouze
+  příznakem is_staff = True.
+  Email slouží jako přihlašovací jméno.
+end note
+
+note right of Spot
+  Atributy locked_until a relace
+  na uživatele řeší souběh transakcí
+  (race condition) při výběru místa.
+end note
+
+note bottom of Res
+  Metoda is_cancelable() ověřuje,
+  zda termín rezervace ještě neproběhl,
+  aby nešlo mazat historii.
+end note
 
 @enduml

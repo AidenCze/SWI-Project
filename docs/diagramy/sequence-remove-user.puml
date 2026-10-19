@@ -1,0 +1,52 @@
+@startuml
+title Sekvenční diagram: Proces odebrání zaměstnance
+
+skinparam maxMessageSize 150
+skinparam BoxPadding 10
+
+actor "Správce firmy" as admin
+participant "Prohlížeč\n(Frontend)" as ui
+participant "Systém\n(Django Views)" as view
+database "Databáze\n(Modely)" as db
+
+== Načtení seznamu zaměstnanců ==
+admin -> ui : Požadavek na zobrazení uživatelů
+ui -> view : GET /zamestnanci/
+activate view
+
+view -> db : Dotaz na všechny registrované zaměstnance
+activate db
+db --> view : Seznam uživatelů (QuerySet)
+deactivate db
+
+view --> ui : Vykreslení seznamu s tlačítky "Odebrat"
+deactivate view
+ui --> admin : Zobrazení přehledu
+
+== Proces odebrání ==
+admin -> ui : Výběr zaměstnance, kliknutí na "Odebrat"\na potvrzení dialogu
+ui -> view : POST /zamestnanci/{id}/odebrat/
+activate view
+
+view -> view : Kontrola ID (Pokouší se správce smazat sám sebe?)
+
+alt Je možné zaměstnance odebrat (není to aktuální uživatel)
+    view -> db : Zrušení budoucích rezervací tohoto zaměstnance
+    activate db
+    db --> view : Potvrzení (místa uvolněna)
+    deactivate db
+    
+    view -> db : Odstranění uživatelského účtu (delete)
+    activate db
+    db --> view : Účet odstraněn
+    deactivate db
+    
+    view --> ui : Přesměrování + Příprava Success zprávy
+else Pokus o smazání vlastního účtu
+    view --> ui : Přesměrování + Příprava Error zprávy\n(Nelze smazat aktuálně přihlášený účet)
+end
+deactivate view
+
+ui --> admin : Zobrazení výsledku (Úspěšně odebráno / Chyba)
+
+@enduml

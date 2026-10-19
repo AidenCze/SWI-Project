@@ -1,0 +1,52 @@
+@startuml
+title Sekvenční diagram: Proces přidání zaměstnance
+
+skinparam maxMessageSize 150
+skinparam BoxPadding 10
+
+actor "Správce firmy" as admin
+participant "Prohlížeč\n(Frontend)" as ui
+participant "Systém\n(Django Views)" as view
+database "Databáze\n(Modely)" as db
+participant "SMTP Server\n(Odesílání e-mailů)" as email
+
+== Zobrazení formuláře ==
+admin -> ui : Požadavek na přidání zaměstnance
+ui -> view : GET /zamestnanci/pridat/
+activate view
+view --> ui : Vykreslení formuláře
+deactivate view
+ui --> admin : Zobrazení formuláře
+
+== Odeslání a zpracování ==
+admin -> ui : Zadání e-mailové adresy a odeslání
+ui -> view : POST data (email)
+activate view
+
+view -> db : Kontrola existence e-mailu v databázi
+activate db
+db --> view : Výsledek kontroly
+deactivate db
+
+alt Existuje již uživatel s tímto e-mailem? (Ano)
+    view --> ui : Znovunačtení formuláře s chybovou hláškou\n(Duplicitní e-mail)
+else Uživatel neexistuje (Ne)
+    view -> view : Vygenerování náhodného hesla\na jeho zahashování
+    
+    view -> db : Uložení nového uživatele (s hashem hesla)
+    activate db
+    db --> view : Potvrzení uložení
+    deactivate db
+    
+    view -> email : Odeslání e-mailu s heslem a instrukcemi
+    activate email
+    email --> view : Potvrzení odeslání
+    deactivate email
+    
+    view --> ui : Přesměrování + Příprava Success zprávy
+end
+deactivate view
+
+ui --> admin : Zobrazení výsledku (Úspěšně přidáno / Chyba)
+
+@enduml
