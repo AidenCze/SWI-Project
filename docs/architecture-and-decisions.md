@@ -71,6 +71,11 @@ Vycházejí přímo z navrženého Use Case diagramu.
 
 ![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-reservation.puml)
 
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-remove-user.puml)
+
+
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-add-user.puml)
+
 ### 5.4 Class diagram
 
 ![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/class.puml)
