@@ -59,3 +59,18 @@ Vycházejí přímo z navrženého Use Case diagramu.
   ![Activity Diagram - Cancel Reservation](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-cancel-reservation.puml)
 * **Správa všech rezervací:** Umožňuje administrátorovi vyhledat konkrétní rezervaci podle data, místa či zaměstnance. Po odstranění objektu administrátorem systém odesílá informační e-mail dotčenému zaměstnanci.
   ![Activity Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/activity-manage-reservations.puml)
+
+
+
+### 5.3 Sequence diagram
+
+  dotčenému zaměstnanci.
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-cancel-reservation.puml)
+
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-login.puml)
+
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-reservation.puml)
+
+### 5.4 Class diagram
+
+![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/class.puml)
