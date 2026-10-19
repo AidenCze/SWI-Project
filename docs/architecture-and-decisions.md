@@ -64,7 +64,7 @@ Vycházejí přímo z navrženého Use Case diagramu.
 
 ### 5.3 Sequence diagram
 
-  dotčenému zaměstnanci.
+
 ![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-cancel-reservation.puml)
 
 ![Sequence Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/sequence-login.puml)
