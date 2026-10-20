@@ -9,6 +9,7 @@ Cílem projektu je vytvořit funkční rezervační systém pro správu firemní
 
 ### Funkční požadavky
 Vycházejí přímo z navrženého Use Case diagramu.
+
 * Společnou funkcí pro všechny uživatele je přihlášení do systému, které ověřuje existenci uživatele, shodu hesla a vytváří uživatelskou relaci.
 * **Zaměstnanec:** Může provádět přihlášení, rezervaci parkovacího místa a následně provést zrušení rezervace.
 * **Správce firmy:** Architektonicky dědí všechna práva běžného zaměstnance. Navíc obsluhuje přidání zaměstnance, odebrání zaměstnance a komplexní správu všech rezervací.
