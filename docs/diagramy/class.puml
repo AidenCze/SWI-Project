@@ -1,5 +1,5 @@
 @startuml
-title Class diagram
+title Class diagram: Databázové modely rezervačního systému
 
 skinparam class {
     BackgroundColor LightGray
@@ -7,7 +7,9 @@ skinparam class {
     BorderColor Black
 }
 
-class "User" as User {
+hide empty methods
+
+class "User (Uživatel)" as User {
     + id : Integer
     + email : String [unique]
     + password : String
@@ -19,9 +21,20 @@ class "User" as User {
     + __str__() : String
 }
 
-class "ParkingSpot" as Spot {
+class "ParkingLot (Parkoviště)" as Lot {
     + id : Integer
-    + number : String [unique]
+    + name : String [unique]
+    + location : String
+    + is_active : Boolean
+    ---
+    + get_total_capacity() : Integer
+    + get_available_spots(date: Date) : Integer
+    + __str__() : String
+}
+
+class "ParkingSpot (Parkovací místo)" as Spot {
+    + id : Integer
+    + number : String
     + is_active : Boolean
     + locked_until : DateTime [nullable]
     ---
@@ -31,7 +44,7 @@ class "ParkingSpot" as Spot {
     + __str__() : String
 }
 
-class "Reservation" as Res {
+class "Reservation (Rezervace)" as Res {
     + id : Integer
     + date : Date
     + created_at : DateTime
@@ -42,9 +55,13 @@ class "Reservation" as Res {
     + __str__() : String
 }
 
-' Relace (vztahy) mezi modely
-User "1" -- "0..*" Res : "vytváří >"
-Spot "1" -- "0..*" Res : "je rezervováno pro >"
-User "0..1" -- "0..*" Spot : "dočasně zamyká >"
+' Relace (vztahy) s využitím správné UML notace
+' Kompozice (plný kosočtverec) = CASCADE delete v Djangu
+Lot "1" *-- "0..*" Spot : "obsahuje >"
+User "1" *-- "0..*" Res : "vytváří >"
+Spot "1" *-- "0..*" Res : "rezervováno pro >"
+
+' Směrovaná asociace (otevřená šipka) = Dočasný volný vztah
+User "0..1" --> "0..*" Spot : "dočasně zamyká >"
 
 @enduml
