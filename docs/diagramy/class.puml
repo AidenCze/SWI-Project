@@ -1,5 +1,5 @@
 @startuml
-title Class diagram: Databázové modely rezervačního systému
+title Class diagram
 
 skinparam class {
     BackgroundColor LightGray
@@ -7,10 +7,7 @@ skinparam class {
     BorderColor Black
 }
 
-' Skrytí prázdných částí pro větší přehlednost
-hide empty methods
-
-class "User (Uživatel)" as User {
+class "User" as User {
     + id : Integer
     + email : String [unique]
     + password : String
@@ -18,9 +15,11 @@ class "User (Uživatel)" as User {
     + is_active : Boolean
     ---
     + set_password(raw_password: String) : void
+    + check_password(raw_password: String) : Boolean
+    + __str__() : String
 }
 
-class "ParkingSpot (Parkovací místo)" as Spot {
+class "ParkingSpot" as Spot {
     + id : Integer
     + number : String [unique]
     + is_active : Boolean
@@ -29,39 +28,23 @@ class "ParkingSpot (Parkovací místo)" as Spot {
     + is_locked() : Boolean
     + lock_spot(user: User) : void
     + unlock_spot() : void
+    + __str__() : String
 }
 
-class "Reservation (Rezervace)" as Res {
+class "Reservation" as Res {
     + id : Integer
     + date : Date
     + created_at : DateTime
     ---
+    + clean() : void
+    + save(*args, **kwargs) : void
     + is_cancelable() : Boolean
+    + __str__() : String
 }
 
 ' Relace (vztahy) mezi modely
 User "1" -- "0..*" Res : "vytváří >"
 Spot "1" -- "0..*" Res : "je rezervováno pro >"
 User "0..1" -- "0..*" Spot : "dočasně zamyká >"
-
-' Vysvětlující poznámky pro vyučujícího
-note left of User
-  Správce firmy se od běžného
-  zaměstnance liší pouze
-  příznakem is_staff = True.
-  Email slouží jako přihlašovací jméno.
-end note
-
-note right of Spot
-  Atributy locked_until a relace
-  na uživatele řeší souběh transakcí
-  (race condition) při výběru místa.
-end note
-
-note bottom of Res
-  Metoda is_cancelable() ověřuje,
-  zda termín rezervace ještě neproběhl,
-  aby nešlo mazat historii.
-end note
 
 @enduml
