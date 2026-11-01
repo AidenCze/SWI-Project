@@ -1,50 +1,62 @@
 @startuml
-title Sekvenční diagram: Zrušení rezervace zaměstnancem
+title Sequence Diagram: Cancel Reservation
 
-skinparam maxMessageSize 150
+actor "employee : User" as emp
+participant "ui : ReservationUI" as ui
+participant "ctrl : ReservationController" as ctrl
+participant "res : Reservation" as res
+participant "spot : ParkingSpot" as spot
 
-skinparam BoxPadding 10
+== 1. Zobrazení detailu rezervace ==
+emp -> ui : viewReservationDetails(reservationId)
+activate ui
 
-actor "Zaměstnanec" as emp
-participant "Prohlížeč\n(Frontend)" as ui
-participant "Systém\n(Django Views)" as view
-database "Databáze\n(Modely)" as db
+ui -> ctrl : getReservationDetails(reservationId)
+activate ctrl
 
-== Zobrazení Dashboardu ==
-emp -> ui : Požadavek na zobrazení přehledu
-ui -> view : GET /dashboard/
-activate view
+ctrl -> res : getDetails()
+activate res
+res --> ctrl : details
+deactivate res
 
-view -> db : Dotaz na aktuální rezervace uživatele
-activate db
-db --> view : Vrácení seznamu rezervací (QuerySet)
-deactivate db
+ctrl --> ui : summaryData
+deactivate ctrl
 
-view --> ui : Vykreslení šablony se seznamem
-deactivate view
-ui --> emp : Zobrazení vlastních rezervací
+ui --> emp : displayReservation()
+deactivate ui
 
-== Proces zrušení ==
-emp -> ui : Výběr rezervace, kliknutí na "Zrušit"\na potvrzení dialogu
-ui -> view : POST /rezervace/{id}/zrusit/
-activate view
+== 2. Proces zrušení ==
+emp -> ui : cancelReservation(reservationId)
+activate ui
 
-view -> db : Dotaz na detail konkrétní rezervace
-activate db
-db --> view : Data o rezervaci (včetně času)
-deactivate db
+ui -> ctrl : processCancellation(reservationId)
+activate ctrl
 
-alt Je možné rezervaci zrušit (termín ještě neproběhl)
-    view -> db : Odstranění objektu (delete)
-    activate db
-    db --> view : Potvrzení smazání
-    deactivate db
-    view --> ui : Přesměrování + Příprava Success zprávy
-else Termín již minul (nelze zrušit)
-    view --> ui : Přesměrování + Příprava Error zprávy
+ctrl -> res : isCancelable()
+activate res
+note right of res: Entita zkontroluje svá data,\nzda termín již neproběhl.
+res --> ctrl : Boolean
+deactivate res
+
+alt isCancelable() == true
+    ctrl -> res : cancel()
+    activate res
+    
+    res -> spot : freeSpot(date, time)
+    activate spot
+    spot --> res : void
+    deactivate spot
+    
+    res --> ctrl : void
+    destroy res
+    note right of ctrl: Entita Reservation je zničena.
+    
+    ctrl --> ui : successMessage
+else reservation is in the past (not cancelable)
+    ctrl --> ui : errorMessage
 end
-deactivate view
+deactivate ctrl
 
-ui --> emp : Zobrazení výsledku (Úspěšně zrušeno / Nelze zrušit)
-
+ui --> emp : displayResult()
+deactivate ui
 @enduml

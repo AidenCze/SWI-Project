@@ -1,5 +1,5 @@
 @startuml
-title Class diagram: Databázové modely rezervačního systému
+title Class Diagram
 
 skinparam class {
     BackgroundColor LightGray
@@ -9,59 +9,106 @@ skinparam class {
 
 hide empty methods
 
-class "User (Uživatel)" as User {
-    + id : Integer
-    + email : String [unique]
-    + password : String
-    + is_staff : Boolean
-    + is_active : Boolean
-    ---
-    + set_password(raw_password: String) : void
-    + check_password(raw_password: String) : Boolean
-    + __str__() : String
+package "Boundary (UI Vrstva)" {
+    class "AdminUI" as AdminUI <<Boundary>> {
+        + submitNewEmployee(email: String)
+        + clickDeleteEmployee(employeeId: Integer)
+        + displayResult()
+    }
+    
+    class "ReservationUI" as ResUI <<Boundary>> {
+        + requestAvailableSpots(date: Date, time: Time)
+        + selectSpot(spotId: Integer)
+        + confirmReservation()
+        + viewReservationDetails(reservationId: Integer)
+        + cancelReservation(reservationId: Integer)
+    }
 }
 
-class "ParkingLot (Parkoviště)" as Lot {
-    + id : Integer
-    + name : String [unique]
-    + location : String
-    + is_active : Boolean
-    ---
-    + get_total_capacity() : Integer
-    + get_available_spots(date: Date) : Integer
-    + __str__() : String
+package "Control (Řídící Vrstva)" {
+    class "AdminController" as AdminCtrl <<Control>> {
+        + processNewEmployee(email: String)
+        + processDeleteEmployee(employeeId: Integer)
+    }
+    
+    class "ReservationController" as ResCtrl <<Control>> {
+        + getAvailableSpots(employee: User, date: Date, time: Time): List<ParkingSpot>
+        + lockSpot(employee: User, spotId: Integer, date: Date, time: Time)
+        + processReservation()
+        + getReservationDetails(reservationId: Integer)
+        + processCancellation(reservationId: Integer)
+    }
 }
 
-class "ParkingSpot (Parkovací místo)" as Spot {
-    + id : Integer
-    + number : String
-    + is_active : Boolean
-    + locked_until : DateTime [nullable]
-    ---
-    + is_locked() : Boolean
-    + lock_spot(user: User) : void
-    + unlock_spot() : void
-    + __str__() : String
+package "Entity (Doménový Model)" {
+    class "User" as User <<Entity>> {
+        - id : Integer
+        - email : String
+        - passwordHash : String
+        - isStaff : Boolean
+        ---
+        + {static} checkEmailExists(email: String) : Boolean
+        + {static} authenticate(email, pass) : User
+        + create(email: String) : User
+        + generatePassword() : void
+        + deleteAccount() : void
+        + getFutureReservations() : List<Reservation>
+        + validateBusinessRules(date: Date, time: Time) : void
+    }
+
+    class "ParkingLot" as Lot <<Entity>> {
+        - id : Integer
+        - name : String
+        ---
+        + getAvailableSpots(date: Date, time: Time) : List<ParkingSpot>
+        + validateOperatingHours(time: Time) : void
+    }
+
+    class "ParkingSpot" as Spot <<Entity>> {
+        - id : Integer
+        - number : String
+        ---
+        + isAvailable(date: Date, time: Time) : Boolean
+        + checkCurrentLocks(date: Date, time: Time) : Boolean
+        + lockSpot(user: User, date: Date, time: Time, duration: int) : Boolean
+        + unlockSpot(date: Date, time: Time) : void
+        + confirmReservation(date: Date, time: Time) : void
+        + freeSpot(date: Date, time: Time) : void
+    }
+
+    class "Reservation" as Res <<Entity>> {
+        - id : Integer
+        - date : Date
+        - time : Time
+        ---
+        + create(employee: User, spot: ParkingSpot, date: Date, time: Time) : Reservation
+        + getDetails() : Object
+        + isCancelable() : Boolean
+        + cancel() : void
+    }
 }
 
-class "Reservation (Rezervace)" as Res {
-    + id : Integer
-    + date : Date
-    + created_at : DateTime
-    ---
-    + clean() : void
-    + save(*args, **kwargs) : void
-    + is_cancelable() : Boolean
-    + __str__() : String
+class "SMTPServer" as SMTP <<External>> {
+    + sendWelcomeEmail(email: String, password: String) : void
+    + sendCancellationEmail(email: String, date: Date) : void
 }
 
-' Relace (vztahy) s využitím správné UML notace
-' Kompozice (plný kosočtverec) = CASCADE delete v Djangu
-Lot "1" *-- "0..*" Spot : "obsahuje >"
-User "1" *-- "0..*" Res : "vytváří >"
-Spot "1" *-- "0..*" Res : "rezervováno pro >"
+' Propojení architektonických vrstev
+AdminUI --> AdminCtrl
+ResUI --> ResCtrl
 
-' Směrovaná asociace (otevřená šipka) = Dočasný volný vztah
-User "0..1" --> "0..*" Spot : "dočasně zamyká >"
+AdminCtrl --> User
+AdminCtrl --> SMTP
 
+ResCtrl --> Lot
+ResCtrl --> Spot
+ResCtrl --> Res
+ResCtrl --> User
+ResCtrl --> SMTP
+
+' Datové a doménové vztahy (s UML notací kompozice)
+Lot "1" *-- "0..*" Spot
+User "1" *-- "0..*" Res
+Spot "1" *-- "0..*" Res
+User "0..1" --> "0..*" Spot
 @enduml

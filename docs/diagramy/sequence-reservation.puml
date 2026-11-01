@@ -1,72 +1,87 @@
 @startuml
-title Sekvenční diagram: Proces rezervace zaměstnancem (s dočasným zámkem)
+title Sequence Diagram: Reservation Process
 
-skinparam maxMessageSize 150
+actor "employee : User" as emp
+participant "ui : ReservationUI" as ui
+participant "ctrl : ReservationController" as ctrl
+participant "lot : ParkingLot" as lot
+participant "spot : ParkingSpot" as spot
+participant "res : Reservation" as res
 
-skinparam BoxPadding 10
+== 1. Hledání dostupného místa ==
+emp -> ui : requestAvailableSpots(date, time)
+activate ui
 
-actor "Zaměstnanec" as emp
-participant "Prohlížeč\n(Frontend)" as ui
-participant "Systém\n(Django Views)" as view
-database "Databáze\n(Modely)" as db
+ui -> ctrl : getAvailableSpots(employee, date, time)
+activate ctrl
 
-== Zjištění dostupnosti ==
-emp -> ui : Výběr data a času pro parkování
-ui -> view : GET požadavek s vybraným termínem
-activate view
+ctrl -> ctrl : validateBusinessRules(employee, date, time)
 
-view -> db : Dotaz na existující rezervace pro zadaný termín
-activate db
-db --> view : Vrácení seznamu obsazených míst
-deactivate db
 
-view --> ui : Zobrazení volných a obsazených míst
-deactivate view
+ctrl -> lot : getAvailableSpots(date, time)
+activate lot
 
-== Pokus o rezervaci a dočasný zámek ==
-emp -> ui : Vybrání konkrétního volného místa
-ui -> view : Požadavek na vytvoření zámku
-activate view
-
-view -> db : Kontrola, zda je místo stále volné
-activate db
-db --> view : Výsledek kontroly
-deactivate db
-
-alt Je místo v tento moment volné?
-    view -> db : Zápis dočasného zámku (na 5 minut)
-    activate db
-    db --> view : Potvrzení aktivace zámku
-    deactivate db
-    view --> ui : Místo uzamčeno, čekání na potvrzení uživatelem
-    
-    emp -> ui : Potvrzení a odeslání rezervačního formuláře
-    ui -> view : POST data formuláře
-    
-    alt Stihl uživatel potvrdit rezervaci v čase zámku?
-        view -> db : Uložení nového objektu Reservation do databáze
-        activate db
-        db --> view : Potvrzení uložení
-        
-        view -> db : Odstranění dočasného zámku
-        db --> view : Zámek odstraněn
-        deactivate db
-        
-        view --> ui : Přesměrování + Příprava potvrzovací zprávy
-    else Limit vypršel (Ne)
-        view -> db : Uvolnění místa pro ostatní (zrušení zámku)
-        activate db
-        db --> view : Místo uvolněno
-        deactivate db
-        
-        view --> ui : Vygenerování chybové hlášky (Vypršel časový limit)
-    end
-
-else Někdo byl rychlejší (Ne)
-    view --> ui : Vygenerování chybové hlášky (Místo si právě rezervuje někdo jiný)
+loop for each spot in lot.spots
+    lot -> spot : isAvailable(date, time)
+    activate spot
+    spot -> spot : checkCurrentLocks(date, time)
+    spot --> lot : Boolean
+    deactivate spot
 end
-deactivate view
 
-ui --> emp : Zobrazení výsledku akce (Úspěšná rezervace / Upozornění na chybu)
+lot --> ctrl : List<ParkingSpot>
+deactivate lot
 
+ctrl --> ui : spotList
+deactivate ctrl
+
+ui --> emp : displayAvailableSpots()
+deactivate ui
+
+== 2. Dočasný zámek a sumarizace ==
+emp -> ui : selectSpot(spotId)
+activate ui
+
+ui -> ctrl : lockSpot(employee, spotId, date, time)
+activate ctrl
+
+ctrl -> spot : lockSpot(employee, date, time)
+activate spot
+spot --> ctrl : Boolean (isLocked)
+deactivate spot
+
+ctrl --> ui : summaryData
+deactivate ctrl
+
+ui --> emp : displaySummary()
+deactivate ui
+
+== 3. Potvrzení a vytvoření rezervace ==
+emp -> ui : confirmReservation()
+activate ui
+
+ui -> ctrl : processReservation()
+activate ctrl
+
+ctrl -> res ** : create(employee, spot, date, time)
+activate res
+
+res -> spot : confirmReservation(date, time)
+activate spot
+spot --> res : void
+deactivate spot
+
+res --> ctrl : Reservation
+deactivate res
+
+ctrl -> spot : unlockSpot(date, time)
+activate spot
+spot --> ctrl : void
+deactivate spot
+
+ctrl --> ui : successMessage
+deactivate ctrl
+
+ui --> emp : displayConfirmation()
+deactivate ui
 @enduml

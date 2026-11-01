@@ -1,52 +1,45 @@
 @startuml
-title Sekvenční diagram: Proces odebrání zaměstnance
+title Sequence Diagram: Delete Employee (BCE Architecture)
 
-skinparam maxMessageSize 150
-skinparam BoxPadding 10
+actor "admin : User" as admin
+participant "ui : AdminUI" as ui
+participant "ctrl : AdminController" as ctrl
+participant "emp : User" as emp
+participant "res : Reservation" as res
 
-actor "Správce firmy" as admin
-participant "Prohlížeč\n(Frontend)" as ui
-participant "Systém\n(Django Views)" as view
-database "Databáze\n(Modely)" as db
 
-== Načtení seznamu zaměstnanců ==
-admin -> ui : Požadavek na zobrazení uživatelů
-ui -> view : GET /zamestnanci/
-activate view
+== 1. Požadavek na smazání ==
+admin -> ui : clickDeleteEmployee(employeeId)
+activate ui
 
-view -> db : Dotaz na všechny registrované zaměstnance
-activate db
-db --> view : Seznam uživatelů (QuerySet)
-deactivate db
+ui -> ctrl : processDeleteEmployee(employeeId)
+activate ctrl
 
-view --> ui : Vykreslení seznamu s tlačítky "Odebrat"
-deactivate view
-ui --> admin : Zobrazení přehledu
+== 2. Zrušení rezervací (Kaskádové mazání) ==
+ctrl -> emp : deleteAccount()
+activate emp
 
-== Proces odebrání ==
-admin -> ui : Výběr zaměstnance, kliknutí na "Odebrat"\na potvrzení dialogu
-ui -> view : POST /zamestnanci/{id}/odebrat/
-activate view
 
-view -> view : Kontrola ID (Pokouší se správce smazat sám sebe?)
+emp -> emp : getReservations()
 
-alt Je možné zaměstnance odebrat (není to aktuální uživatel)
-    view -> db : Zrušení budoucích rezervací tohoto zaměstnance
-    activate db
-    db --> view : Potvrzení (místa uvolněna)
-    deactivate db
+loop for each reservation
+    emp -> res : cancel()
+    activate res
     
-    view -> db : Odstranění uživatelského účtu (delete)
-    activate db
-    db --> view : Účet odstraněn
-    deactivate db
-    
-    view --> ui : Přesměrování + Příprava Success zprávy
-else Pokus o smazání vlastního účtu
-    view --> ui : Přesměrování + Příprava Error zprávy\n(Nelze smazat aktuálně přihlášený účet)
+
+    res --> emp : void
+    destroy res
+
 end
-deactivate view
 
-ui --> admin : Zobrazení výsledku (Úspěšně odebráno / Chyba)
+== 3. Odstranění uživatele ==
+emp --> ctrl : void
+destroy emp
 
+
+ctrl --> ui : successMessage
+deactivate ctrl
+
+ui --> admin : displayResult()
+deactivate ui
 @enduml

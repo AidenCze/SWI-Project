@@ -1,52 +1,51 @@
 @startuml
-title Sekvenční diagram: Proces přidání zaměstnance
+title Sequence Diagram: Add Employee (BCE with External Service)
 
-skinparam maxMessageSize 150
-skinparam BoxPadding 10
+actor "admin : User" as admin
+participant "ui : AdminUI" as ui
+participant "ctrl : AdminController" as ctrl
+participant "User <<Class>>" as userClass
+participant "newEmp : User" as newEmp
+participant "smtp : SMTPServer" as smtp <<External>>
 
-actor "Správce firmy" as admin
-participant "Prohlížeč\n(Frontend)" as ui
-participant "Systém\n(Django Views)" as view
-database "Databáze\n(Modely)" as db
-participant "SMTP Server\n(Odesílání e-mailů)" as email
+== 1. Požadavek na vytvoření ==
+admin -> ui : submitNewEmployee(email)
+activate ui
 
-== Zobrazení formuláře ==
-admin -> ui : Požadavek na přidání zaměstnance
-ui -> view : GET /zamestnanci/pridat/
-activate view
-view --> ui : Vykreslení formuláře
-deactivate view
-ui --> admin : Zobrazení formuláře
+ui -> ctrl : processNewEmployee(email)
+activate ctrl
 
-== Odeslání a zpracování ==
-admin -> ui : Zadání e-mailové adresy a odeslání
-ui -> view : POST data (email)
-activate view
+== 2. Validace e-mailu ==
+ctrl -> userClass : checkEmailExists(email)
+activate userClass
 
-view -> db : Kontrola existence e-mailu v databázi
-activate db
-db --> view : Výsledek kontroly
-deactivate db
+userClass --> ctrl : Boolean (exists)
+deactivate userClass
 
-alt Existuje již uživatel s tímto e-mailem? (Ano)
-    view --> ui : Znovunačtení formuláře s chybovou hláškou\n(Duplicitní e-mail)
-else Uživatel neexistuje (Ne)
-    view -> view : Vygenerování náhodného hesla\na jeho zahashování
+alt exists == false (e-mail je unikátní)
+    == 3. Vytvoření a inicializace uživatele ==
+    ctrl -> newEmp ** : create(email)
+    activate newEmp
     
-    view -> db : Uložení nového uživatele (s hashem hesla)
-    activate db
-    db --> view : Potvrzení uložení
-    deactivate db
+    newEmp -> newEmp : generatePassword()
+
     
-    view -> email : Odeslání e-mailu s heslem a instrukcemi
-    activate email
-    email --> view : Potvrzení odeslání
-    deactivate email
+    newEmp --> ctrl : User (new instance)
+    deactivate newEmp
     
-    view --> ui : Přesměrování + Příprava Success zprávy
+    == 4. Odeslání notifikace ==
+    ctrl -> smtp : sendWelcomeEmail(email, generatedPassword)
+    activate smtp
+
+    smtp --> ctrl : void (success)
+    deactivate smtp
+    
+    ctrl --> ui : successMessage
+else exists == true (e-mail již existuje)
+    ctrl --> ui : errorMessage
 end
-deactivate view
+deactivate ctrl
 
-ui --> admin : Zobrazení výsledku (Úspěšně přidáno / Chyba)
-
+ui --> admin : displayResult()
+deactivate ui
 @enduml
