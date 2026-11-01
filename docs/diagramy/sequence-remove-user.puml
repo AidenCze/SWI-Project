@@ -1,5 +1,5 @@
 @startuml
-title Sequence Diagram: Delete Employee (BCE Architecture)
+title Sequence Diagram: Delete Employee
 
 actor "admin : User" as admin
 participant "ui : AdminUI" as ui
