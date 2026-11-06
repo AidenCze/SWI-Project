@@ -1,5 +1,5 @@
 @startuml
-title Implementace návrhového vzoru State
+title Implementation of the State design pattern
 
 skinparam class {
     BackgroundColor LightGray

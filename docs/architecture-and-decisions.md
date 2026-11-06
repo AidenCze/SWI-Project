@@ -80,8 +80,7 @@ Vycházejí přímo z navrženého Use Case diagramu.
 
 ![Class Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/class.puml)
 
-
-#### Vzor state
+**Vzor state**
 
 ![Class-state Diagram - Manage Reservations](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/AidenCze/SWI-Project/main/docs/diagramy/class-state.puml)
 
