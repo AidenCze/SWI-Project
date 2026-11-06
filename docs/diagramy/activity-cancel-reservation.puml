@@ -7,13 +7,13 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah
 |Zaměstnanec|
-|Systém (Django)|
+|Systém |
 
 |Zaměstnanec|
 start
 :Zobrazení přehledu vlastních rezervací\n(Dashboard);
 
-|Systém (Django)|
+|Systém |
 :Dotaz do databáze na\naktuální rezervace uživatele;
 :Vykreslení seznamu rezervací;
 
@@ -21,7 +21,7 @@ start
 :Výběr konkrétní rezervace;
 :Kliknutí na tlačítko "Zrušit"\na potvrzení volby;
 
-|Systém (Django)|
+|Systém |
 ' Rozhodovací uzel pro kontrolu platnosti zrušení
 if (Je možné rezervaci zrušit?\n(např. termín ještě neproběhl)) then (Ano)
     :Odstranění objektu\nReservation z databáze;

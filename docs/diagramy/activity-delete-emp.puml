@@ -7,13 +7,13 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah
 |Správce firmy|
-|Systém (Django)|
+|Systém |
 
 |Správce firmy|
 start
 :Zobrazení seznamu zaměstnanců;
 
-|Systém (Django)|
+|Systém |
 :Dotaz do databáze na\nvšechny registrované zaměstnance;
 :Vykreslení přehledu uživatelů;
 
@@ -21,7 +21,7 @@ start
 :Výběr konkrétního zaměstnance;
 :Kliknutí na tlačítko "Odebrat"\na potvrzení varovného dialogu;
 
-|Systém (Django)|
+|Systém |
 ' Kontrola proti chybám (např. smazání sama sebe)
 if (Je možné zaměstnance odebrat?\n(např. správce nemaže sám sebe)) then (Ano)
     :Zrušení všech budoucích\nrezervací tohoto zaměstnance;

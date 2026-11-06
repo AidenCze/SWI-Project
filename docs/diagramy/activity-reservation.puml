@@ -7,20 +7,20 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah
 |Zaměstnanec|
-|Systém (Django)|
+|Systém |
 
 |Zaměstnanec|
 start
 :Výběr data a času pro parkování;
 
-|Systém (Django)|
+|Systém |
 :Dotaz do databáze na existující\nrezervace pro zadaný termín;
 :Zobrazení volných a obsazených míst;
 
 |Zaměstnanec|
 :Vybrání konkrétního volného místa;
 
-|Systém (Django)|
+|Systém |
 ' První kontrola: Byli jsme první, kdo na místo klikl?
 if (Je místo v tento moment volné?) then (Ano)
     :Aktivace dočasného zámku místa\n(např. na 5 minut pro ostatní skryto);
@@ -28,7 +28,7 @@ if (Je místo v tento moment volné?) then (Ano)
     |Zaměstnanec|
     :Potvrzení a odeslání\nrezervačního formuláře;
     
-    |Systém (Django)|
+    |Systém |
     ' Druhá kontrola: Stihl to v časovém limitu?
     if (Stihl uživatel potvrdit\nrezervaci v čase zámku?) then (Ano)
         :Uložení nového objektu\nReservation do databáze;

@@ -7,13 +7,13 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah
 |Správce firmy|
-|Systém (Django)|
+|Systém |
 
 |Správce firmy|
 start
 :Zobrazení globálního přehledu\nvšech firemních rezervací;
 
-|Systém (Django)|
+|Systém |
 :Dotaz do databáze na\nvšechny existující rezervace;
 :Vykreslení tabulky (s možností filtrace);
 
@@ -21,7 +21,7 @@ start
 :Vyhledání konkrétní rezervace\n(podle data, místa či zaměstnance);
 :Kliknutí na "Zrušit rezervaci"\na potvrzení akce;
 
-|Systém (Django)|
+|Systém (|
 ' Rozhodovací uzel pro kontrolu
 if (Je možné rezervaci zrušit?\n(např. termín ještě neproběhl)) then (Ano)
     :Odstranění objektu\nReservation z databáze;

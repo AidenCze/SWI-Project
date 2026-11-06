@@ -7,20 +7,20 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah (platí pro Zaměstnance i Správce)
 |Uživatel|
-|Systém (Django)|
+|Systém |
 
 |Uživatel|
 start
 :Požadavek na zobrazení přihlášení;
 
-|Systém (Django)|
+|Systém |
 :Vykreslení přihlašovacího formuláře;
 
 |Uživatel|
 :Zadání uživatelského jména a hesla;
 :Odeslání údajů k ověření;
 
-|Systém (Django)|
+|Systém |
 :Ověření existence uživatele;
 :Ověření shody hesla (hash);
 

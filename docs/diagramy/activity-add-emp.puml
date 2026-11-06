@@ -7,20 +7,20 @@ skinparam defaultTextAlignment center
 
 ' Definice plaveckých drah
 |Správce firmy|
-|Systém (Django)|
+|Systém |
 
 |Správce firmy|
 start
 :Otevření formuláře pro\npřidání nového zaměstnance;
 
-|Systém (Django)|
+|Systém |
 :Vykreslení formuláře;
 
 |Správce firmy|
 :Zadání e-mailové adresy\n(slouží i jako uživatelské jméno);
 :Odeslání formuláře;
 
-|Systém (Django)|
+|Systém |
 ' Kontrola, zda email už není v databázi
 if (Existuje již uživatel\ns tímto e-mailem?) then (Ano)
     :Vygenerování chybové hlášky\n(Duplicitní e-mail);
