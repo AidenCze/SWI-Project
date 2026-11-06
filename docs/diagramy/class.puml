@@ -33,25 +33,24 @@ package "Control (Řídící Vrstva)" {
     
     class "ReservationController" as ResCtrl <<Control>> {
         + getAvailableSpots(employee: User, date: Date, time: Time): List<ParkingSpot>
-        + lockSpot(employee: User, spotId: Integer, date: Date, time: Time)
         + processReservation()
         + getReservationDetails(reservationId: Integer)
         + processCancellation(reservationId: Integer)
     }
 }
 
-package "Entity (Doménový Model)" {
+package "Entity" {
     class "User" as User <<Entity>> {
         - id : Integer
         - email : String
         - passwordHash : String
         - isStaff : Boolean
         ---
-        + {static} checkEmailExists(email: String) : Boolean
-        + {static} authenticate(email, pass) : User
-        + create(email: String) : User
+        + {static} objects.get(id: Integer) : User
+        + {static} objects.filter(email: String) : List<User>
+        + save() : void
+        + delete() : void
         + generatePassword() : void
-        + deleteAccount() : void
         + getFutureReservations() : List<Reservation>
         + validateBusinessRules(date: Date, time: Time) : void
     }
@@ -60,6 +59,7 @@ package "Entity (Doménový Model)" {
         - id : Integer
         - name : String
         ---
+        + {static} objects.all() : List<ParkingLot>
         + getAvailableSpots(date: Date, time: Time) : List<ParkingSpot>
         + validateOperatingHours(time: Time) : void
     }
@@ -69,9 +69,6 @@ package "Entity (Doménový Model)" {
         - number : String
         ---
         + isAvailable(date: Date, time: Time) : Boolean
-        + checkCurrentLocks(date: Date, time: Time) : Boolean
-        + lockSpot(user: User, date: Date, time: Time, duration: int) : Boolean
-        + unlockSpot(date: Date, time: Time) : void
         + confirmReservation(date: Date, time: Time) : void
         + freeSpot(date: Date, time: Time) : void
     }
@@ -80,11 +77,35 @@ package "Entity (Doménový Model)" {
         - id : Integer
         - date : Date
         - time : Time
+        - state : ReservationState
         ---
-        + create(employee: User, spot: ParkingSpot, date: Date, time: Time) : Reservation
-        + getDetails() : Object
-        + isCancelable() : Boolean
-        + cancel() : void
+        + {static} objects.get(id: Integer) : Reservation
+        + save() : void
+        + getState() : ReservationState
+        + cancel() : boolean
+        + expire() : boolean
+        - setState(state: ReservationState) : void
+    }
+
+    abstract class "ReservationState" as State <<State>> {
+        # context : Reservation
+        + cancel() : boolean
+        + expire() : boolean
+    }
+
+    class "ActiveState" as StateActive <<ConcreteState>> {
+        + cancel() : boolean
+        + expire() : boolean
+    }
+
+    class "CancelledState" as StateCancelled <<ConcreteState>> {
+        + cancel() : boolean
+        + expire() : boolean
+    }
+
+    class "ExpiredState" as StateExpired <<ConcreteState>> {
+        + cancel() : boolean
+        + expire() : boolean
     }
 }
 
@@ -93,18 +114,26 @@ class "SMTPServer" as SMTP <<External>> {
     + sendCancellationEmail(email: String, date: Date) : void
 }
 
-' Propojení architektonických vrstev
+' Propojení UI a Control
 AdminUI --> AdminCtrl
 ResUI --> ResCtrl
 
+' Propojení Control a Active Record Entit (Controller volá ORM)
 AdminCtrl --> User
-AdminCtrl --> SMTP
-
 ResCtrl --> Lot
 ResCtrl --> Spot
 ResCtrl --> Res
 ResCtrl --> User
+
+' Propojení Control a External
+AdminCtrl --> SMTP
 ResCtrl --> SMTP
+
+' Vztahy vzoru State
+Res --> State
+State <|-- StateActive
+State <|-- StateCancelled
+State <|-- StateExpired
 
 ' Datové a doménové vztahy (s UML notací kompozice)
 Lot "1" *-- "0..*" Spot
