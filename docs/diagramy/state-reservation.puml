@@ -1,0 +1,32 @@
+@startuml
+title State Diagram: Reservation Lifecycle
+
+skinparam state {
+    BackgroundColor LightGray
+    BorderColor Black
+    ArrowColor Black
+}
+
+' Initial state
+[*] --> ActiveState : Reservation creation\n[new ActiveState()]
+
+state ActiveState {
+    ActiveState : The reservation is valid and pending in the calendar.
+}
+
+state CancelledState {
+    CancelledState : The reservation has been cancelled\n(by user or administrator).
+}
+
+state ExpiredState {
+    ExpiredState : The reservation time has passed\n(processed by a background cron job).
+}
+
+' Transitions from ActiveState
+ActiveState --> CancelledState : cancel(context)
+ActiveState --> ExpiredState : expire(context)
+
+' End of lifecycle (terminal states)
+CancelledState --> [*]
+ExpiredState --> [*]
+@enduml
