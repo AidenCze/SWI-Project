@@ -1,5 +1,5 @@
 @startuml
-title State Diagram: Reservation Lifecycle
+title State  Diagram: Reservation Lifecycle
 
 skinparam state {
     BackgroundColor LightGray
@@ -19,7 +19,7 @@ state ActiveState {
 }
 
 state CancelledState {
-    CancelledState : The reservation was cancelled,\nabandoned, or timeout occurred.
+    CancelledState : The reservation was explicitly cancelled\nafter being confirmed.
 }
 
 state ExpiredState {
@@ -28,7 +28,7 @@ state ExpiredState {
 
 ' Transitions from PendingState
 PendingState --> ActiveState : confirm(context)
-PendingState --> CancelledState : cancel(context) \n[User aborts or 5-min timeout]
+PendingState --> [*] : cancel(context) \n[User aborts or timeout -> Hard Delete]
 
 ' Transitions from ActiveState
 ActiveState --> CancelledState : cancel(context)

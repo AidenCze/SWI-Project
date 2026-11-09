@@ -15,8 +15,8 @@ class "Reservation" as Res <<Context>>  {
     + cancel() : boolean
     + expire() : boolean
     - setState(state: ReservationState) : void
+    + delete() : void
 }
-
 
 
 abstract class "ReservationState" as State <<State>> {
@@ -49,6 +49,7 @@ class "ExpiredState" as StateExpired <<ConcreteState>> {
     + cancel() : boolean
     + expire() : boolean
 }
+
 
 
 ' Strukturální vztahy vzoru State

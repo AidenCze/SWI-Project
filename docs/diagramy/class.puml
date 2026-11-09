@@ -81,6 +81,7 @@ package "Entity" {
         ---
         + {static} objects.get(id: Integer) : Reservation
         + save() : void
+        + delete() : void
         + getState() : ReservationState
         + confirm() : boolean
         + cancel() : boolean
