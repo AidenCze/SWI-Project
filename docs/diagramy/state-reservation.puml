@@ -7,20 +7,28 @@ skinparam state {
     ArrowColor Black
 }
 
-' Initial state
-[*] --> ActiveState : Reservation creation\n[new ActiveState()]
+' Initial state creates a temporary lock
+[*] --> PendingState : Select spot in UI\n[new PendingState()]
+
+state PendingState {
+    PendingState : Temporary lock (e.g., 5 minutes).\nWaiting for user confirmation.
+}
 
 state ActiveState {
-    ActiveState : The reservation is valid and pending in the calendar.
+    ActiveState : The reservation is confirmed and valid.
 }
 
 state CancelledState {
-    CancelledState : The reservation has been cancelled\n(by user or administrator).
+    CancelledState : The reservation was cancelled,\nabandoned, or timeout occurred.
 }
 
 state ExpiredState {
-    ExpiredState : The reservation time has passed\n(processed by a background cron job).
+    ExpiredState : The reservation time has passed.
 }
+
+' Transitions from PendingState
+PendingState --> ActiveState : confirm(context)
+PendingState --> CancelledState : cancel(context) \n[User aborts or 5-min timeout]
 
 ' Transitions from ActiveState
 ActiveState --> CancelledState : cancel(context)
@@ -29,4 +37,5 @@ ActiveState --> ExpiredState : expire(context)
 ' End of lifecycle (terminal states)
 CancelledState --> [*]
 ExpiredState --> [*]
+
 @enduml

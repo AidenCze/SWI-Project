@@ -82,6 +82,7 @@ package "Entity" {
         + {static} objects.get(id: Integer) : Reservation
         + save() : void
         + getState() : ReservationState
+        + confirm() : boolean
         + cancel() : boolean
         + expire() : boolean
         - setState(state: ReservationState) : void
@@ -89,21 +90,31 @@ package "Entity" {
 
     abstract class "ReservationState" as State <<State>> {
         # context : Reservation
+        + confirm() : boolean
+        + cancel() : boolean
+        + expire() : boolean
+    }
+
+    class "PendingState" as StatePending <<ConcreteState>> {
+        + confirm() : boolean
         + cancel() : boolean
         + expire() : boolean
     }
 
     class "ActiveState" as StateActive <<ConcreteState>> {
+        + confirm() : boolean
         + cancel() : boolean
         + expire() : boolean
     }
 
     class "CancelledState" as StateCancelled <<ConcreteState>> {
+        + confirm() : boolean
         + cancel() : boolean
         + expire() : boolean
     }
 
     class "ExpiredState" as StateExpired <<ConcreteState>> {
+        + confirm() : boolean
         + cancel() : boolean
         + expire() : boolean
     }
@@ -129,8 +140,9 @@ ResCtrl --> User
 AdminCtrl --> SMTP
 ResCtrl --> SMTP
 
-' Vztahy vzoru State
-Res --> State
+' Vztahy vzoru State s využitím kompozice
+Res *--> "1" State : state
+State <|-- StatePending
 State <|-- StateActive
 State <|-- StateCancelled
 State <|-- StateExpired

@@ -11,6 +11,7 @@ class "Reservation" as Res <<Context>>  {
     - id : Integer
     - state : ReservationState
     + getState() : ReservationState
+    + confirm() : boolean
     + cancel() : boolean
     + expire() : boolean
     - setState(state: ReservationState) : void
@@ -20,31 +21,39 @@ class "Reservation" as Res <<Context>>  {
 
 abstract class "ReservationState" as State <<State>> {
     # context : Reservation
+    + confirm() : boolean
+    + cancel() : boolean
+    + expire() : boolean
+}
+
+class "PendingState" as StatePending <<ConcreteState>> {
+    + confirm() : boolean
     + cancel() : boolean
     + expire() : boolean
 }
 
 class "ActiveState" as StateActive <<ConcreteState>> {
+    + confirm() : boolean
     + cancel() : boolean
     + expire() : boolean
 }
 
 class "CancelledState" as StateCancelled <<ConcreteState>> {
+    + confirm() : boolean
     + cancel() : boolean
     + expire() : boolean
 }
 
 class "ExpiredState" as StateExpired <<ConcreteState>> {
+    + confirm() : boolean
     + cancel() : boolean
     + expire() : boolean
 }
 
 
-
-
-
 ' Strukturální vztahy vzoru State
-Res *--> State : state
+Res *--> "1" State : state
+State <|-- StatePending
 State <|-- StateActive
 State <|-- StateCancelled
 State <|-- StateExpired
