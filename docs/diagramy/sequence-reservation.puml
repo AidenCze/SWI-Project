@@ -1,5 +1,5 @@
 @startuml
-title Sequence Diagram: Reservation Process (BCE, State & Active Record)
+title Sequence Diagram: Reservation Process
 
 actor "employee : User" as emp
 participant "ui : ReservationUI" as ui

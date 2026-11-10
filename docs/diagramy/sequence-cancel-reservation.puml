@@ -1,12 +1,11 @@
 @startuml
-title Sequence Diagram: Cancel Reservation (BCE, State & Active Record)
+title Sequence Diagram: Cancel Reservation
 
 actor "employee : User" as emp
 participant "ui : ReservationUI" as ui
 participant "ctrl : ReservationController" as ctrl
 participant "Reservation <<Class>>" as resClass
 participant "res : Reservation" as res
-participant "state : ReservationState" as state
 participant "smtp : SMTPServer" as smtp <<External>>
 
 == 1. Zobrazení detailu rezervace ==
@@ -45,11 +44,9 @@ deactivate resClass
 ctrl -> res : cancel()
 activate res
 
-res -> state : cancel()
-activate state
 
-state --> res : Boolean (success)
-deactivate state
+
+
 
 res --> ctrl : Boolean (success)
 deactivate res
