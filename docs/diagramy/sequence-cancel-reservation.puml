@@ -1,11 +1,13 @@
 @startuml
-title Sequence Diagram: Cancel Reservation
+title Sequence Diagram: Cancel Reservation (BCE, State & Active Record)
 
 actor "employee : User" as emp
 participant "ui : ReservationUI" as ui
 participant "ctrl : ReservationController" as ctrl
+participant "Reservation <<Class>>" as resClass
 participant "res : Reservation" as res
-participant "spot : ParkingSpot" as spot
+participant "state : ReservationState" as state
+participant "smtp : SMTPServer" as smtp <<External>>
 
 == 1. Zobrazení detailu rezervace ==
 emp -> ui : viewReservationDetails(reservationId)
@@ -14,10 +16,11 @@ activate ui
 ui -> ctrl : getReservationDetails(reservationId)
 activate ctrl
 
-ctrl -> res : getDetails()
-activate res
-res --> ctrl : details
-deactivate res
+' Active Record: Načtení z databáze
+ctrl -> resClass : objects.get(reservationId)
+activate resClass
+resClass --> ctrl : res
+deactivate resClass
 
 ctrl --> ui : summaryData
 deactivate ctrl
@@ -32,27 +35,40 @@ activate ui
 ui -> ctrl : processCancellation(reservationId)
 activate ctrl
 
-ctrl -> res : isCancelable()
+' Znovunačtení entity (nebo použití z paměti)
+ctrl -> resClass : objects.get(reservationId)
+activate resClass
+resClass --> ctrl : res
+deactivate resClass
+
+' Využití návrhového vzoru State
+ctrl -> res : cancel()
 activate res
-note right of res: Entita zkontroluje svá data,\nzda termín již neproběhl.
-res --> ctrl : Boolean
+
+res -> state : cancel()
+activate state
+
+state --> res : Boolean (success)
+deactivate state
+
+res --> ctrl : Boolean (success)
 deactivate res
 
-alt isCancelable() == true
-    ctrl -> res : cancel()
+alt success == true (zrušení povoleno)
+    ' Uložení změn do databáze (Soft Delete)
+    ctrl -> res : save()
     activate res
-    
-    res -> spot : freeSpot(date, time)
-    activate spot
-    spot --> res : void
-    deactivate spot
-    
     res --> ctrl : void
-    destroy res
-    note right of ctrl: Entita Reservation je zničena.
+    deactivate res
+    
+    ' Volitelné: Odeslání e-mailu definované v Class diagramu
+    ctrl -> smtp : sendCancellationEmail(email, date)
+    activate smtp
+    smtp --> ctrl : void
+    deactivate smtp
     
     ctrl --> ui : successMessage
-else reservation is in the past (not cancelable)
+else success == false (již zrušeno nebo v minulosti)
     ctrl --> ui : errorMessage
 end
 deactivate ctrl

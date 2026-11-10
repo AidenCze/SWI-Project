@@ -1,9 +1,10 @@
 @startuml
-title Sequence Diagram: Delete Employee
+title Sequence Diagram: Delete Employee (BCE & Active Record)
 
 actor "admin : User" as admin
 participant "ui : AdminUI" as ui
 participant "ctrl : AdminController" as ctrl
+participant "User <<Class>>" as userClass
 participant "emp : User" as emp
 participant "res : Reservation" as res
 
@@ -15,27 +16,41 @@ activate ui
 ui -> ctrl : processDeleteEmployee(employeeId)
 activate ctrl
 
-== 2. Zrušení rezervací (Kaskádové mazání) ==
-ctrl -> emp : deleteAccount()
+== 2. Načtení uživatele (Active Record) ==
+ctrl -> userClass : objects.get(employeeId)
+activate userClass
+userClass --> ctrl : emp
+deactivate userClass
+
+== 3. Uvolnění budoucích rezervací ==
+ctrl -> emp : getFutureReservations()
 activate emp
+emp --> ctrl : List<Reservation>
+deactivate emp
 
-
-emp -> emp : getReservations()
-
-loop for each reservation
-    emp -> res : cancel()
+loop for each res in List
+    ctrl -> res : cancel()
     activate res
     
 
-    res --> emp : void
-    destroy res
 
+
+
+    
+    res --> ctrl : Boolean (true)
+    
+    ' Zapsání zrušeného stavu do DB (uvolnění místa)
+    ctrl -> res : save()
+    res --> ctrl : void
+    deactivate res
 end
 
-== 3. Odstranění uživatele ==
+== 4. Odstranění uživatele z databáze ==
+ctrl -> emp : delete()
+activate emp
+
 emp --> ctrl : void
 destroy emp
-
 
 ctrl --> ui : successMessage
 deactivate ctrl

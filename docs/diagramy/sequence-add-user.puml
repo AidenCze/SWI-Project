@@ -16,24 +16,29 @@ ui -> ctrl : processNewEmployee(email)
 activate ctrl
 
 == 2. Validace e-mailu ==
-ctrl -> userClass : checkEmailExists(email)
+' Změněno na volání Active Record metody definované v Class diagramu
+ctrl -> userClass : objects.filter(email)
 activate userClass
 
-userClass --> ctrl : Boolean (exists)
+' Controller vyhodnotí, zda seznam obsahuje uživatele
+userClass --> ctrl : List<User>
 deactivate userClass
 
-alt exists == false (e-mail je unikátní)
+alt List<User> is empty (e-mail je unikátní)
     == 3. Vytvoření a inicializace uživatele ==
     ctrl -> newEmp ** : create(email)
     activate newEmp
     
     newEmp -> newEmp : generatePassword()
-
+    
+    ' PŘIDÁNO: Volání metody save() pro Active Record
+    newEmp -> newEmp : save()
     
     newEmp --> ctrl : User (new instance)
     deactivate newEmp
     
     == 4. Odeslání notifikace ==
+    ' Controller má přístup k vygenerovanému heslu např. přes get vlastnost nebo před uložením hashe
     ctrl -> smtp : sendWelcomeEmail(email, generatedPassword)
     activate smtp
 
@@ -41,7 +46,7 @@ alt exists == false (e-mail je unikátní)
     deactivate smtp
     
     ctrl --> ui : successMessage
-else exists == true (e-mail již existuje)
+else List<User> is NOT empty (e-mail již existuje)
     ctrl --> ui : errorMessage
 end
 deactivate ctrl

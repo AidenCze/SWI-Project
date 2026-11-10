@@ -1,9 +1,10 @@
 @startuml
-title Sequence Diagram: Reservation Process
+title Sequence Diagram: Reservation Process (BCE, State & Active Record)
 
 actor "employee : User" as emp
 participant "ui : ReservationUI" as ui
 participant "ctrl : ReservationController" as ctrl
+participant "ParkingLot <<Class>>" as lotClass
 participant "lot : ParkingLot" as lot
 participant "spot : ParkingSpot" as spot
 participant "res : Reservation" as res
@@ -15,16 +16,21 @@ activate ui
 ui -> ctrl : getAvailableSpots(employee, date, time)
 activate ctrl
 
-ctrl -> ctrl : validateBusinessRules(employee, date, time)
 
+
+' Načtení parkoviště (Active Record)
+ctrl -> lotClass : objects.all()
+activate lotClass
+lotClass --> ctrl : List<ParkingLot>
+deactivate lotClass
 
 ctrl -> lot : getAvailableSpots(date, time)
 activate lot
 
-loop for each spot in lot.spots
+loop for each spot in lot
+    ' Volání metody, kterou máš v Class diagramu
     lot -> spot : isAvailable(date, time)
     activate spot
-    spot -> spot : checkCurrentLocks(date, time)
     spot --> lot : Boolean
     deactivate spot
 end
@@ -38,17 +44,25 @@ deactivate ctrl
 ui --> emp : displayAvailableSpots()
 deactivate ui
 
-== 2. Dočasný zámek a sumarizace ==
+== 2. Dočasný zámek (Vytvoření Draftu / PendingState) ==
 emp -> ui : selectSpot(spotId)
 activate ui
 
-ui -> ctrl : lockSpot(employee, spotId, date, time)
+' UI informuje Controller o výběru
+ui -> ctrl : processSelection(spotId)
 activate ctrl
 
-ctrl -> spot : lockSpot(employee, date, time)
-activate spot
-spot --> ctrl : Boolean (isLocked)
-deactivate spot
+' VYTVOŘENÍ ZÁMKU: Instancování rezervace ve stavu Pending
+ctrl -> res ** : create(date, time, new PendingState())
+activate res
+res --> ctrl : res (Draft)
+deactivate res
+
+' Zápis zámku do databáze
+ctrl -> res : save()
+activate res
+res --> ctrl : void
+deactivate res
 
 ctrl --> ui : summaryData
 deactivate ctrl
@@ -56,28 +70,33 @@ deactivate ctrl
 ui --> emp : displaySummary()
 deactivate ui
 
-== 3. Potvrzení a vytvoření rezervace ==
+== 3. Potvrzení rezervace (Přechod stavu) ==
 emp -> ui : confirmReservation()
 activate ui
 
 ui -> ctrl : processReservation()
 activate ctrl
 
-ctrl -> res ** : create(employee, spot, date, time)
+' Využití vzoru State k potvrzení
+ctrl -> res : confirm()
 activate res
 
-res -> spot : confirmReservation(date, time)
-activate spot
-spot --> res : void
-deactivate spot
 
-res --> ctrl : Reservation
+
+res --> ctrl : Boolean (true)
 deactivate res
 
-ctrl -> spot : unlockSpot(date, time)
+' Entita místa se dozví o potvrzení (dle tvého Class diagramu)
+ctrl -> spot : confirmReservation(date, time)
 activate spot
 spot --> ctrl : void
 deactivate spot
+
+' Uložení nového stavu do databáze
+ctrl -> res : save()
+activate res
+res --> ctrl : void
+deactivate res
 
 ctrl --> ui : successMessage
 deactivate ctrl
