@@ -38,6 +38,9 @@
                             <span>Administrace</span>
                         </a>
                     {% endif %}
+                    <a href="{% url 'password_change' %}" class="icon-button text-decoration-none d-inline-grid place-items-center" title="Změnit heslo">
+                        <i class="bi bi-key"></i>
+                    </a>
                     <span class="user-chip d-none d-md-inline"><i class="bi bi-person-circle"></i>{{ user.first_name|default:user.username }}</span>
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
