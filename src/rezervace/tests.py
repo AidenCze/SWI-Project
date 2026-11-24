@@ -268,6 +268,42 @@ class AdministrationTests(TestCase):
         self.assertContains(response, 'Účet byl vytvořen')
         self.assertContains(response, 'new.employee@example.com')
         self.assertContains(response, 'Dočasné heslo:')
+        self.assertTrue(user.parksys_profile.must_change_password)
+
+    def test_new_employee_is_forced_to_change_password(self):
+        user = User.objects.create_user(
+            username='forced',
+            email='forced@example.com',
+            password='Temporary123!',
+        )
+        user.parksys_profile.must_change_password = True
+        user.parksys_profile.save()
+        self.client.login(username='forced', password='Temporary123!')
+
+        response = self.client.get('/dashboard/')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/password/change/')
+
+    def test_user_can_change_password(self):
+        user = User.objects.create_user(
+            username='changing',
+            email='changing@example.com',
+            password='Temporary123!',
+        )
+        self.client.login(username='changing', password='Temporary123!')
+
+        response = self.client.post('/password/change/', {
+            'old_password': 'Temporary123!',
+            'new_password1': 'Permanent-Password-456!',
+            'new_password2': 'Permanent-Password-456!',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/dashboard/')
+        user.refresh_from_db()
+        self.assertTrue(user.check_password('Permanent-Password-456!'))
+        self.assertFalse(user.parksys_profile.must_change_password)
 
     def test_staff_can_create_lot_and_spots_with_layout(self):
         self.client.login(username='admin', password='test-password')

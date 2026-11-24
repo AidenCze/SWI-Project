@@ -12,6 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db.models import Count, Q
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 import secrets
 import string
 
@@ -319,6 +321,27 @@ def reservation_delete_view(request, reservation_id):
     return redirect('dashboard')
 
 
+@login_required
+def password_change_view(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            profile = getattr(user, 'parksys_profile', None)
+            if profile:
+                profile.must_change_password = False
+                profile.save(update_fields=['must_change_password'])
+            messages.success(request, 'Heslo bylo změněno.')
+            return redirect('dashboard')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'password_change.html', {
+        'form': form,
+    })
+
+
 @staff_member_required
 def admin_dashboard_view(request):
     today = timezone.localdate()
@@ -371,11 +394,13 @@ def admin_user_create_view(request):
             email = form.cleaned_data['email']
             alphabet = string.ascii_letters + string.digits
             password = ''.join(secrets.choice(alphabet) for _ in range(14))
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=email,
                 email=email,
                 password=password,
             )
+            user.parksys_profile.must_change_password = True
+            user.parksys_profile.save(update_fields=['must_change_password'])
             created_credentials = {
                 'email': email,
                 'password': password,

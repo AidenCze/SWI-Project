@@ -24,6 +24,7 @@ urlpatterns = [
         authentication_form=CustomLoginForm
     ), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('password/change/', rezervace_views.password_change_view, name='password_change'),
     path('dashboard/', rezervace_views.dashboard_view, name='dashboard'),
     
     # Nový řádek pro vytvoření rezervace
