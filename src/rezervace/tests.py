@@ -255,6 +255,15 @@ class AdministrationTests(TestCase):
         self.assertContains(response, 'Administrace')
         self.assertContains(response, '/manage/')
 
+    def test_dashboard_contains_theme_and_password_controls(self):
+        self.client.login(username='employee', password='test-password')
+
+        response = self.client.get('/dashboard/')
+
+        self.assertContains(response, 'id="themeToggle"')
+        self.assertContains(response, 'parksys-theme')
+        self.assertContains(response, 'Změnit heslo')
+
     def test_staff_can_create_employee(self):
         self.client.login(username='admin', password='test-password')
 
