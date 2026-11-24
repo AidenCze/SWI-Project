@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('parksys-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.dataset.theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        })();
+    </script>
 </head>
 <body>
     <nav class="topbar">
@@ -38,7 +45,10 @@
                             <span>Administrace</span>
                         </a>
                     {% endif %}
-                    <a href="{% url 'password_change' %}" class="icon-button text-decoration-none d-inline-grid place-items-center" title="Změnit heslo">
+                    <button type="button" class="icon-button theme-toggle" id="themeToggle" title="Přepnout tmavý motiv" aria-label="Přepnout tmavý motiv">
+                        <i class="bi bi-moon-stars" aria-hidden="true"></i>
+                    </button>
+                    <a href="{% url 'password_change' %}" class="icon-button icon-link" title="Změnit heslo" aria-label="Změnit heslo">
                         <i class="bi bi-key"></i>
                     </a>
                     <span class="user-chip d-none d-md-inline"><i class="bi bi-person-circle"></i>{{ user.first_name|default:user.username }}</span>
@@ -69,5 +79,27 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const toggle = document.getElementById('themeToggle');
+            if (!toggle) return;
+
+            const icon = toggle.querySelector('i');
+            const syncTheme = () => {
+                const dark = document.documentElement.dataset.theme === 'dark';
+                icon.className = dark ? 'bi bi-sun' : 'bi bi-moon-stars';
+                toggle.setAttribute('aria-label', dark ? 'Přepnout světlý motiv' : 'Přepnout tmavý motiv');
+                toggle.title = dark ? 'Přepnout světlý motiv' : 'Přepnout tmavý motiv';
+            };
+
+            syncTheme();
+            toggle.addEventListener('click', () => {
+                const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.dataset.theme = nextTheme;
+                localStorage.setItem('parksys-theme', nextTheme);
+                syncTheme();
+            });
+        })();
+    </script>
 </body>
 </html>
