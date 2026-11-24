@@ -3,72 +3,71 @@
 {% block title %}Moje rezervace | ParkSys{% endblock %}
 
 {% block content %}
-<div class="row mb-4 align-items-center">
-    <div class="col">
-        <h2 class="fw-bold text-body mb-0">Přehled rezervací</h2>
-        <p class="text-secondary">Vaše nadcházející parkovací místa</p>
+<div class="page-heading">
+    <div>
+        <h1>Přehled</h1>
+        <p>Vaše parkování na jednom místě.</p>
     </div>
-    <div class="col-auto">
-        <a href="{% url 'reservation_create' %}" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> Rezervovat místo
-        </a>
-    </div>
+    <a href="{% url 'reservation_create' %}" class="btn btn-primary-modern px-4 py-3">
+        <i class="bi bi-plus-lg me-2"></i>Nová rezervace
+    </a>
 </div>
 
-{% if rezervace %}
-<div class="card bg-body overflow-hidden">
+<div class="surface overflow-hidden">
+    {% if rezervace %}
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th class="ps-4 py-3">Datum</th>
-                    <th class="py-3">Místo</th>
-                    <th class="py-3">Čas</th>
-                    <th class="py-3">Status</th>
-                    <th class="text-end pe-4 py-3">Akce</th>
+                    <th>Datum</th>
+                    <th>Místo</th>
+                    <th>Čas</th>
+                    <th>Stav</th>
+                    <th class="text-end">Akce</th>
                 </tr>
             </thead>
-            <tbody class="border-top-0">
+            <tbody>
                 {% for r in rezervace %}
                 <tr>
-                    <td class="ps-4">
-                        <i class="bi bi-calendar-event text-primary me-2"></i> 
-                        <span class="fw-medium">{{ r.date|date:"d. m. Y" }}</span>
-                    </td>
+                    <td><strong>{{ r.date|date:"d. m. Y" }}</strong></td>
                     <td>
-                        <span class="badge bg-secondary text-light border px-2 py-1 fs-6">
-                            <i class="bi bi-p-square me-1"></i> {{ r.spot.number }}
-                        </span>
-                        <div class="text-secondary small mt-1">{{ r.spot.lot.name }}</div>
+                        <strong>{{ r.spot.number }}</strong>
+                        <div class="text-secondary small">{{ r.spot.lot.name }}</div>
                     </td>
+                    <td>{{ r.start_time|time:"H:i" }}–{{ r.end_time|time:"H:i" }}</td>
                     <td>
-                        <span class="fw-medium">{{ r.start_time|time:"H:i" }} - {{ r.end_time|time:"H:i" }}</span>
+                        {% if r.state_code == 'ACTIVE' %}
+                            <span class="status-pill">Aktivní</span>
+                        {% elif r.state_code == 'PENDING' %}
+                            <span class="status-pill pending">Čeká na potvrzení</span>
+                        {% elif r.state_code == 'CANCELLED' %}
+                            <span class="status-pill cancelled">Zrušená</span>
+                        {% else %}
+                            <span class="status-pill expired">Vypršelá</span>
+                        {% endif %}
                     </td>
-                    <td>
-                        <span class="badge bg-primary px-2 py-1">Rezervováno</span>
-                    </td>
-                    <td class="text-end pe-4">
+                    <td class="text-end">
+                        {% if r.state_code == 'ACTIVE' or r.state_code == 'PENDING' %}
                         <form method="post" action="{% url 'reservation_delete' r.id %}" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Opravdu chcete rezervaci zrušit?');">
-                                <i class="bi bi-trash3"></i> Zrušit
+                            <button type="submit" class="btn btn-light border btn-sm" onclick="return confirm('Zrušit rezervaci?');">
+                                <i class="bi bi-x-lg me-1"></i>Zrušit
                             </button>
                         </form>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
-{% else %}
-<div class="card bg-body text-center py-5">
-    <div class="card-body">
-        <i class="bi bi-inbox text-secondary" style="font-size: 3rem;"></i>
-        <h4 class="mt-3 text-body fw-bold">Žádné rezervace</h4>
-        <p class="text-secondary mb-4">Zatím nemáte naplánované žádné parkování.</p>
-        <a href="{% url 'reservation_create' %}" class="btn btn-primary px-4">Vytvořit první rezervaci</a>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-calendar2-plus text-secondary" style="font-size:48px;"></i>
+        <h4 class="mt-3">Ještě nemáte rezervaci</h4>
+        <p class="text-secondary">Vyberte místo a vytvořte svůj první termín.</p>
+        <a href="{% url 'reservation_create' %}" class="btn btn-primary-modern mt-2">Vybrat místo</a>
     </div>
+    {% endif %}
 </div>
-{% endif %}
 {% endblock %}

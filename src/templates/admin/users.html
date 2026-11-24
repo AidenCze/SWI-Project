@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Správa uživatelů | ParkSys{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    <aside class="surface admin-sidebar">
+        <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i>Přehled</a>
+        <a href="{% url 'admin_users' %}" class="active"><i class="bi bi-people"></i>Uživatelé</a>
+        <a href="{% url 'admin_lots' %}"><i class="bi bi-p-square"></i>Parkoviště</a>
+        <a href="{% url 'admin_reservations' %}"><i class="bi bi-calendar3"></i>Rezervace</a>
+    </aside>
+    <div>
+        <div class="page-heading">
+            <div><h1>Uživatelé</h1><p>Správa zaměstnanců a jejich přístupu.</p></div>
+            <a href="{% url 'admin_user_create' %}" class="btn btn-primary-modern px-4 py-3"><i class="bi bi-person-plus me-2"></i>Přidat uživatele</a>
+        </div>
+        <div class="surface overflow-hidden">
+            <div class="p-3 border-bottom">
+                <form method="get" class="d-flex gap-2">
+                    <input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Hledat podle e-mailu nebo jména">
+                    <button class="btn btn-light border px-3"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Uživatel</th><th>Rezervace</th><th>Role</th><th>Stav účtu</th><th class="text-end">Akce</th></tr></thead>
+                    <tbody>
+                        {% for employee in employees %}
+                        <tr>
+                            <td><strong>{{ employee.email|default:employee.username }}</strong></td>
+                            <td>{{ employee.reservation_count }}</td>
+                            <td>{% if employee.is_staff %}Správce{% else %}Zaměstnanec{% endif %}</td>
+                            <td><span class="status-pill {% if not employee.is_active %}cancelled{% endif %}">{% if employee.is_active %}Aktivní{% else %}Neaktivní{% endif %}</span></td>
+                            <td class="text-end">
+                                {% if employee != request.user %}
+                                <form method="post" action="{% url 'admin_user_delete' employee.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-light border btn-sm" onclick="return confirm('Odebrat uživatele a jeho budoucí rezervace?');"><i class="bi bi-trash"></i></button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}<tr><td colspan="5" class="text-center text-secondary py-5">Žádní uživatelé nebyli nalezeni.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

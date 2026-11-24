@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Správa rezervací | ParkSys{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    <aside class="surface admin-sidebar">
+        <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i>Přehled</a>
+        <a href="{% url 'admin_users' %}"><i class="bi bi-people"></i>Uživatelé</a>
+        <a href="{% url 'admin_lots' %}"><i class="bi bi-p-square"></i>Parkoviště</a>
+        <a href="{% url 'admin_reservations' %}" class="active"><i class="bi bi-calendar3"></i>Rezervace</a>
+    </aside>
+    <div>
+        <div class="page-heading">
+            <div><h1>Rezervace</h1><p>Vyhledávání, kontrola a rušení rezervací.</p></div>
+        </div>
+        <div class="surface overflow-hidden">
+            <form method="get" class="p-3 border-bottom">
+                <div class="row g-2">
+                    <div class="col-md-3"><input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Uživatel"></div>
+                    <div class="col-md-2"><input type="date" name="date" value="{{ date }}" class="form-control"></div>
+                    <div class="col-md-2"><input type="search" name="spot" value="{{ spot }}" class="form-control" placeholder="Místo"></div>
+                    <div class="col-md-3">
+                        <select name="state" class="form-select">
+                            <option value="">Všechny stavy</option>
+                            {% for value, label in states %}
+                                <option value="{{ value }}" {% if state == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-grid"><button class="btn btn-primary-modern">Filtrovat</button></div>
+                </div>
+            </form>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Uživatel</th><th>Místo</th><th>Datum</th><th>Čas</th><th>Stav</th><th class="text-end">Akce</th></tr></thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td><strong>{{ reservation.user.email|default:reservation.user.username }}</strong></td>
+                            <td>{{ reservation.spot.number }}</td>
+                            <td>{{ reservation.date|date:"d. m. Y" }}</td>
+                            <td>{{ reservation.start_time|time:"H:i" }}–{{ reservation.end_time|time:"H:i" }}</td>
+                            <td>
+                                {% if reservation.state_code == 'ACTIVE' %}<span class="status-pill">Aktivní</span>
+                                {% elif reservation.state_code == 'PENDING' %}<span class="status-pill pending">Čekající</span>
+                                {% elif reservation.state_code == 'CANCELLED' %}<span class="status-pill cancelled">Zrušená</span>
+                                {% else %}<span class="status-pill expired">Vypršelá</span>{% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if reservation.state_code == 'ACTIVE' or reservation.state_code == 'PENDING' %}
+                                <form method="post" action="{% url 'admin_reservation_delete' reservation.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-light border btn-sm" onclick="return confirm('Zrušit rezervaci uživatele?');"><i class="bi bi-x-lg"></i></button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}<tr><td colspan="6" class="text-center text-secondary py-5">Žádné rezervace neodpovídají filtrování.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
