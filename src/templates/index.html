@@ -1,29 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center mt-5">
-    <div class="col-lg-8 text-center">
-        <i class="bi bi-car-front-fill text-primary" style="font-size: 5rem;"></i>
-        
-        <h1 class="display-4 fw-bold mt-3 mb-4 text-body">Chytré firemní parkování</h1>
-        <p class="lead text-secondary mb-5 px-md-5">
-            Zajistěte si své parkovací místo včas. Systém pro snadnou správu a rezervaci firemních parkovacích míst.
+<section class="hero">
+    <div>
+        <h1>Vaše místo.<br><span>Jasně vyhrazené.</span></h1>
+        <p class="mt-4">
+            Moderní plánování firemního parkování. Vyberte parkoviště, zvolte volné místo a potvrďte termín během několika sekund.
         </p>
-        
-        <div class="d-flex justify-content-center gap-3">
+        <div class="d-flex flex-wrap gap-3 mt-4">
             {% if user.is_authenticated %}
-                <a href="{% url 'reservation_create' %}" class="btn btn-primary btn-lg px-5 py-3 shadow-sm">
-                    <i class="bi bi-calendar-check me-2"></i> Nová rezervace
-                </a>
-                <a href="{% url 'dashboard' %}" class="btn btn-body bg-body btn-lg px-5 py-3 border shadow-sm text-body">
-                    Moje místa
-                </a>
+                <a href="{% url 'reservation_create' %}" class="btn btn-primary-modern btn-lg px-4 py-3"><i class="bi bi-calendar-plus me-2"></i>Najít místo</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-light border btn-lg px-4 py-3">Moje rezervace</a>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5 py-3 shadow-sm">
-                    Vstoupit do systému <i class="bi bi-arrow-right ms-2"></i>
-                </a>
+                <a href="{% url 'login' %}" class="btn btn-primary-modern btn-lg px-4 py-3">Vstoupit do systému <i class="bi bi-arrow-right ms-2"></i></a>
             {% endif %}
         </div>
     </div>
-</div>
+    <div class="hero-visual surface d-flex align-items-center justify-content-center">
+        <div class="surface p-3" style="width:70%; position:relative; z-index:2; transform:rotate(-3deg);">
+            <div class="d-flex justify-content-between mb-3"><strong>Dnes</strong><span class="status-pill">Volná místa</span></div>
+            <div class="parking-row">
+                {% for number in "12345678" %}
+                    <div class="spot-card" style="min-height:72px;">
+                        <span class="spot-number">{{ number }}</span>
+                        <span class="spot-status">Volné</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -1,43 +1,51 @@
 <div class="d-grid gap-4">
     {% for group in spot_groups %}
-        <section>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1">{{ group.lot_name }}</h6>
-                    <div class="text-secondary small">Patro {{ group.floor }}</div>
-                </div>
+        <section class="parking-map">
+            <div class="parking-lot-heading">
+                <div><strong>{{ group.lot_name }}</strong><div class="text-secondary small">Patro {{ group.floor }}</div></div>
+                <span class="status-pill">{{ group.spots|length }} míst</span>
             </div>
-            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+            <div class="parking-row" style="grid-template-columns: repeat({{ group.layout_columns }}, minmax(80px, 1fr));">
                 {% for spot in group.spots %}
-                    <div class="col">
-                        <label class="w-100 h-100">
-                            <input
-                                class="btn-check"
-                                type="radio"
-                                name="spot"
-                                id="spot-{{ spot.id }}"
-                                value="{{ spot.id }}"
-                                {% if selected_spot_id and selected_spot_id == spot.id %}checked{% endif %}
-                                {% if spot.is_occupied and spot.id != editing_reservation.spot_id %}disabled{% endif %}
-                            >
-                            <span class="btn w-100 h-100 text-start p-3 rounded-4 border position-relative {% if spot.is_occupied %}btn-outline-secondary text-secondary opacity-50{% else %}btn-outline-primary{% endif %}">
-                                <span class="d-flex justify-content-between align-items-start gap-2">
-                                    <span>
-                                        <span class="fw-bold d-block">{{ spot.number }}</span>
-                                        <span class="small d-block">{{ spot.get_spot_type_display }}</span>
-                                    </span>
-                                    {% if editing_reservation and spot.id == editing_reservation.spot_id %}
-                                        <span class="badge text-bg-primary">Vaše rezervace</span>
-                                    {% elif spot.is_occupied %}
-                                        <span class="badge text-bg-secondary">Obsazeno</span>
-                                    {% else %}
-                                        <span class="badge text-bg-success">Volné</span>
-                                    {% endif %}
-                                </span>
-                                <span class="small text-secondary d-block mt-2">{{ spot.lot.name }}</span>
-                            </span>
-                        </label>
-                    </div>
+                    {% if spot.cell_kind == 'EMPTY' %}
+                        <div class="grid-empty-cell" aria-hidden="true"></div>
+                    {% elif spot.cell_kind == 'PILLAR' %}
+                        <div class="grid-obstacle-cell" title="Pilíř / překážka">
+                            <i class="bi bi-columns-gap"></i>
+                        </div>
+                    {% else %}
+                    <label class="spot-option {% if spot.is_locked_by_other or spot.is_occupied and spot.id != editing_reservation.spot_id %}disabled{% endif %}">
+                        <input
+                            type="radio"
+                            name="spot"
+                            id="spot-{{ spot.id }}"
+                            value="{{ spot.id }}"
+                            {% if selected_spot_id and selected_spot_id == spot.id %}checked{% endif %}
+                            {% if spot.is_locked_by_other or spot.is_occupied and spot.id != editing_reservation.spot_id %}disabled{% endif %}
+                        >
+                        <span class="spot-card">
+                            <div class="d-flex justify-content-between">
+                                <span class="spot-number">{{ spot.number }}</span>
+                                {% if spot.spot_type == 'DISABLED_ONLY' %}
+                                    <i class="bi bi-person-wheelchair spot-symbol"></i>
+                                {% elif spot.spot_type == 'EV_ONLY' %}
+                                    <i class="bi bi-lightning-charge-fill spot-symbol"></i>
+                                {% else %}
+                                    <i class="bi bi-car-front-fill spot-symbol"></i>
+                                {% endif %}
+                            </div>
+                            {% if editing_reservation and spot.id == editing_reservation.spot_id %}
+                                <span class="spot-status">Vaše místo</span>
+                            {% elif spot.is_locked_by_other %}
+                                <span class="spot-status selected-by-other">Vybráno jiným uživatelem</span>
+                            {% elif spot.is_occupied %}
+                                <span class="spot-status">Obsazené</span>
+                            {% else %}
+                                <span class="spot-status">Volné</span>
+                            {% endif %}
+                        </span>
+                    </label>
+                    {% endif %}
                 {% endfor %}
             </div>
         </section>

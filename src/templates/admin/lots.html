@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Parkoviště | ParkSys{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    <aside class="surface admin-sidebar">
+        <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-1x2"></i>Přehled</a>
+        <a href="{% url 'admin_users' %}"><i class="bi bi-people"></i>Uživatelé</a>
+        <a href="{% url 'admin_lots' %}" class="active"><i class="bi bi-p-square"></i>Parkoviště</a>
+        <a href="{% url 'admin_reservations' %}"><i class="bi bi-calendar3"></i>Rezervace</a>
+    </aside>
+    <div>
+        <div class="page-heading">
+            <div><h1>Parkoviště</h1><p>Rozložení a parkovací místa jednotlivých oblastí.</p></div>
+            <a href="{% url 'admin_lot_create' %}" class="btn btn-primary-modern px-4 py-3"><i class="bi bi-plus-lg me-2"></i>Nové parkoviště</a>
+        </div>
+        <div class="surface overflow-hidden">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Parkoviště</th><th>Patro</th><th>Rozložení</th><th>Místa</th><th class="text-end">Akce</th></tr></thead>
+                    <tbody>
+                        {% for lot in lots %}
+                        <tr>
+                            <td><strong>{{ lot.name }}</strong></td>
+                            <td>{{ lot.floor }}</td>
+                            <td>{{ lot.layout_rows }} × {{ lot.layout_columns }}</td>
+                            <td>{{ lot.active_spot_count }}/{{ lot.spot_count }} aktivních</td>
+                            <td class="text-end">
+                                <a href="{% url 'admin_spots' lot.id %}" class="btn btn-light border btn-sm"><i class="bi bi-grid me-1"></i>Místa</a>
+                                <a href="{% url 'admin_lot_edit' lot.id %}" class="btn btn-light border btn-sm"><i class="bi bi-pencil"></i></a>
+                                <form method="post" action="{% url 'admin_lot_delete' lot.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-light border btn-sm" onclick="return confirm('Odstranit parkoviště i všechna jeho místa?');"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-secondary py-5">Zatím nebylo vytvořeno žádné parkoviště.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
